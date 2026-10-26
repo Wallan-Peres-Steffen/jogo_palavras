@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>E2E — Palavra do Dia</title>
+    <style>
+      body { background: #12142a; color: #f5efe3; font-family: system-ui, sans-serif; padding: 24px; }
+      h1 { font-family: Georgia, serif; }
+      .teste { padding: 8px 0; border-bottom: 1px solid #333a66; }
+      .teste.ok span { color: #7fd6a3; }
+      .teste.falha span { color: #e4674c; }
+      .teste small { display: block; color: #b9b4c9; font-family: ui-monospace, monospace; }
+      #app-frame { position: fixed; left: -2000px; top: 0; width: 420px; height: 800px; border: 0; }
+    </style>
+  </head>
+  <body>
+    <h1>Fluxo completo</h1>
+    <p>Inicia o diário, descobre a resposta pelo armazenamento local, digita e confere o resultado.</p>
+    <div id="resultado"></div>
+    <p id="status">Executando…</p>
+
+    <script>
+      // Limpa o estado da execução anterior ANTES de criar o iframe, para que o
+      // app comece sempre como uma primeira visita de verdade.
+      try {
+        const chaves = [];
+        for (let i = 0; i < localStorage.length; i += 1) {
+          const chave = localStorage.key(i);
+          if (chave && chave.startsWith('pdd:v1:')) chaves.push(chave);
+        }
+        chaves.forEach((chave) => localStorage.removeItem(chave));
+      } catch {
+        /* localStorage bloqueado: o app usa o fallback em memória */
+      }
+
+      const frame = document.createElement('iframe');
+      frame.id = 'app-frame';
+      frame.title = 'Aplicativo em teste';
+      frame.src = '../index.html';
+      document.body.appendChild(frame);
+
+      const resultados = [];
+
+      function registrar(nome, ok, detalhe = '') {
+        resultados.push({ nome, ok, detalhe });
+      }
+
+      function esperar(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      function normalizar(texto) {
+        return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+      }
+
+      function texto(el) {
+        return (el?.textContent ?? '').trim();
+      }
+
+      function botaoPorTexto(doc, seletor, rotulo) {
+        return [...doc.querySelectorAll(seletor)].find((el) => texto(el) === rotulo);
+      }
+
+      async function executar() {
+        if (!frame.contentDocument?.querySelector('.tela-inicial')) {
+          await new Promise((resolve) => {
+            const limite = setTimeout(resolve, 8000);
+            frame.addEventListener(
+              'load',
+              () => {
+                clearTimeout(limite);
+                resolve();
+              },
+              { once: true }
+            );
+          });
+        }
+
+        const doc = frame.contentDocument;
+        const win = frame.contentWindow;
+
+        let pronto = false;
+        for (let i = 0; i < 60 && !pronto; i += 1) {
+          if (doc.querySelector('.tela-inicial')) pronto = true;
+          else await esperar(100);
+        }
+
+        registrar(
+          'app renderizou a tela inicial',
+          pronto,
+          pronto ? '' : `readyState=${doc.readyState}; body=${doc.body?.innerHTML?.slice(0, 220)}`
+        );
+
+        await esperar(900);
+        registrar('primeira visita não abre modal automaticamente', !doc.querySelector('.modal'));
+
+        doc.querySelector('[data-action="como-jogar"]')?.click();
+        await esperar(150);
+        registrar('Como jogar abre sob demanda', Boolean(doc.querySelector('.modal')));
+        doc.querySelector('.modal-fechar')?.click();
+        await esperar(150);
+
+        doc.querySelector('[data-action="jogar-diario"]')?.click();
+        await esperar(250);
+
+        registrar('partida diária iniciou', Boolean(doc.querySelector('.tela-jogo')));
+        registrar('teclado virtual montado', doc.querySelectorAll('.tecla').length >= 28);
+
+        const bruto = win.localStorage.getItem('pdd:v1:partidaDiaria');
+        const salva = bruto ? JSON.parse(bruto) : null;
+        registrar('partida salva no localStorage', Boolean(salva?.resposta));
+        if (!salva?.resposta) {
+          registrar('partida diária acessível para o teste', false, 'localStorage sem partida');
+          concluir();
+          return;
+        }
+
+        const palavra = normalizar(salva.resposta);
+        registrar('palavra do dia tem 5 letras', palavra.length === 5, palavra);
+
+        for (const letra of palavra) {
+          doc.querySelector(`[data-key="${letra}"]`)?.click();
+        }
+        await esperar(80);
+        const primeiraLinha = doc.querySelectorAll('.board .linha')[0];
+        registrar(
+          'cinco letras aparecem na linha atual',
+          primeiraLinha?.querySelectorAll('.casa.preenchida').length === 5
+        );
+
+        doc.querySelector('[data-key="Enter"]')?.click();
+        await esperar(1500);
+
+        registrar('tabuleiro marcou os 5 verdes', doc.querySelectorAll('.casa.certo').length === 5);
+        registrar('modal de vitória abriu', texto(doc.querySelector('.modal h2')) === 'Você descobriu!');
+
+        const stats = JSON.parse(win.localStorage.getItem('pdd:v1:stats') ?? '{}');
+        registrar('estatística de vitória registrada', stats.vitorias === 1 && stats.streak === 1, JSON.stringify(stats));
+        registrar('resultado do dia salvo', Boolean(win.localStorage.getItem('pdd:v1:diarioHoje')));
+
+        botaoPorTexto(doc, '.modal-acoes button', 'Fechar')?.click();
+        await esperar(200);
+
+        registrar('tela inicial mostra resultado de hoje', Boolean(doc.querySelector('.resultado-hoje.ok')));
+        registrar('selo de sequência visível', texto(doc.querySelector('#selo-streak b')) === '1');
+
+        doc.querySelector('.tela-inicial [data-action="stats"]')?.click();
+        await esperar(150);
+        registrar('estatísticas abriram', Boolean(doc.querySelector('.tela-stats')));
+        registrar('histograma renderizou', doc.querySelectorAll('.histograma .barra').length === 6);
+
+        doc.querySelector('.topbar [data-action="ajustes"]')?.click();
+        await esperar(150);
+        doc.querySelector('[data-ajuste="tema"]')?.click();
+        await esperar(100);
+        registrar('modo daltônico aplicado', doc.documentElement.dataset.theme === 'daltonico');
+        doc.querySelector('.modal-fechar')?.click();
+        await esperar(150);
+
+        doc.querySelector('.topbar [data-action="inicio"]')?.click();
+        await esperar(150);
+
+        doc.querySelector('[data-action="pratica"]')?.click();
+        await esperar(200);
+        registrar('modo prática iniciou', Boolean(doc.querySelector('.tela-jogo')) && texto(doc.querySelector('.modo-tag')) === 'PRÁTICA');
+
+        for (const letra of 'ABRIR') {
+          doc.querySelector(`[data-key="${letra}"]`)?.click();
+        }
+        doc.querySelector('[data-key="Enter"]')?.click();
+        await esperar(1200);
+
+        const coloridas = doc.querySelectorAll('.tela-jogo .casa.certo, .tela-jogo .casa.presente, .tela-jogo .casa.ausente').length;
+        registrar('palpite válido coloriu 5 casas na prática', coloridas === 5, `casas: ${coloridas}`);
+
+        const statsDepois = JSON.parse(win.localStorage.getItem('pdd:v1:stats') ?? '{}');
+        registrar('prática não altera estatísticas', statsDepois.jogos === 1, JSON.stringify(statsDepois));
+
+        win.location.reload();
+        let doc2 = null;
+        for (let i = 0; i < 40 && !doc2; i += 1) {
+          await esperar(100);
+          if (frame.contentDocument?.querySelector('.tela-inicial')) doc2 = frame.contentDocument;
+        }
+        registrar('reload mantém o resultado do dia', Boolean(doc2?.querySelector('.resultado-hoje.ok')));
+        registrar('reload preserva o streak', texto(doc2?.querySelector('#selo-streak b')) === '1');
+        registrar('reload preserva a preferência de tema', doc2?.documentElement.dataset.theme === 'daltonico');
+
+        win.localStorage.setItem(
+          'pdd:v1:stats',
+          '{"jogos":"muitos","vitorias":-2,"streak":null,"maxStreak":"x","distribuicao":"nope","ultimoDia":123}'
+        );
+        win.localStorage.setItem(
+          'pdd:v1:partidaDiaria',
+          '{"modo":"diario","resposta":"<script>","tentativas":"x","avaliacoes":[]}'
+        );
+        win.localStorage.setItem(
+          'pdd:v1:diarioHoje',
+          '{"data":"2026-10-22","status":"won","tentativas":"x","avaliacoes":[]}'
+        );
+
+        win.location.reload();
+        let doc3 = null;
+        for (let i = 0; i < 40 && !doc3; i += 1) {
+          await esperar(100);
+          if (frame.contentDocument?.querySelector('.tela-inicial')) doc3 = frame.contentDocument;
+        }
+        registrar('armazenamento corrompido não quebra o app', Boolean(doc3?.querySelector('.tela-inicial')));
+        registrar('estado inválido foi descartado', !doc3?.querySelector('.resultado-hoje'));
+
+        concluir();
+      }
+
+      function concluir() {
+        const falhas = resultados.filter((r) => !r.ok);
+        const container = document.getElementById('resultado');
+        container.innerHTML = '';
+
+        const resumo = document.createElement('div');
+        resumo.textContent = `${resultados.length - falhas.length}/${resultados.length} verificações aprovadas`;
+        resumo.style.fontWeight = '800';
+        resumo.style.marginBottom = '10px';
+        resumo.style.color = falhas.length === 0 ? '#7fd6a3' : '#e4674c';
+        container.appendChild(resumo);
+
+        resultados.forEach((r) => {
+          const item = document.createElement('div');
+          item.className = `teste ${r.ok ? 'ok' : 'falha'}`;
+          item.innerHTML = `<span aria-hidden="true">${r.ok ? '✓' : '✕'}</span> ${r.nome}${
+            r.detalhe ? `<small>${r.detalhe}</small>` : ''
+          }`;
+          container.appendChild(item);
+        });
+
+        document.getElementById('status').textContent = falhas.length === 0 ? 'Tudo certo!' : `${falhas.length} falha(s).`;
+        document.title = falhas.length === 0 ? '✓ E2E' : '✕ E2E com falhas';
+      }
+
+      executar().catch((erro) => {
+        registrar('execução sem exceções', false, erro.message);
+        concluir();
+      });
+    </script>
+  </body>
+</html>

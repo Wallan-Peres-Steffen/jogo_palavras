@@ -1,0 +1,70 @@
+// Respostas curadas do jogo (forma de exibição, com acentos quando natural).
+// A comparação usa a forma normalizada (sem acentos, maiúscula) — ver dictionary.js.
+export const RESPOSTAS = [
+  'ABRIR', 'ACASO', 'ACHAR', 'AÇÕES', 'ACIMA', 'AÇUDE', 'AGORA', 'AGUDO', 'AINDA', 'AJUDA',
+  'ALGUM', 'ALUNO', 'ANUAL', 'APOIO', 'AREIA', 'ARROZ', 'ASSIM', 'ATLAS', 'AUTOR', 'AVISO',
+  'AVIÃO', 'AZEDO',
+
+  'BAILE', 'BAIXO', 'BANCO', 'BANDA', 'BANHO', 'BARCO', 'BARRO', 'BATOM', 'BEIJO', 'BICHO',
+  'BLOCO', 'BOLSA', 'BOMBA', 'BORDA', 'BRAVO', 'BRIGA', 'BRISA', 'BRUXO', 'BURRO', 'BUSCA',
+
+  'CABRA', 'CACAU', 'CAIXA', 'CALMA', 'CALOR', 'CAMPO', 'CANAL', 'CANTO', 'CAPAZ', 'CARGA',
+  'CARNE', 'CARTA', 'CASAL', 'CASCA', 'CAUSA', 'CERCA', 'CERTO', 'CHAMA', 'CHAVE', 'CHEIO',
+  'CHUVA', 'CICLO', 'CINCO', 'CINZA', 'CIRCO', 'CLARO', 'CLIMA', 'COBRA', 'COISA', 'COLAR',
+  'COMER', 'CONTA', 'CORAL', 'CORPO', 'CORRE', 'COURO', 'CRAVO', 'CRIME', 'CRUEL', 'CULPA',
+  'CUSTO',
+
+  'DANÇA', 'DENTE', 'DESDE', 'DEVER', 'DIABO', 'DIGNO', 'DISCO', 'DOBRA', 'DOGMA', 'DOSES',
+  'DRAMA', 'DUPLO',
+
+  'ELITE', 'ENFIM', 'ENTRE', 'ESTAR', 'ÉTICA', 'EXAME', 'EXATO',
+
+  'FÁCIL', 'FALAR', 'FALSO', 'FAVOR', 'FEBRE', 'FELIZ', 'FERRO', 'FESTA', 'FIBRA', 'FILME',
+  'FINAL', 'FIRME', 'FISCO', 'FLORA', 'FLUIR', 'FOLHA', 'FONTE', 'FORÇA', 'FORMA', 'FORTE',
+  'FRACO', 'FRASE', 'FREIO', 'FRUTA', 'FUGIR', 'FUMAR', 'FUNDO',
+
+  'GANHO', 'GARRA', 'GENRO', 'GENTE', 'GESSO', 'GIRAR', 'GLOBO', 'GOLPE', 'GORDO', 'GOSTO',
+  'GRAMA', 'GRATO', 'GRAVE', 'GRITO', 'GRUPO',
+
+  'HASTE', 'HERÓI', 'HONRA', 'HORAS', 'HOTEL', 'HUMOR',
+
+  'IDEIA', 'IGUAL', 'ILHAS', 'ÍMPAR', 'IRMÃO',
+
+  'JEITO', 'JOGAR', 'JOVEM', 'JUNTO', 'JUSTO',
+
+  'LARGO', 'LASER', 'LAVAR', 'LEITE', 'LENTO', 'LETRA', 'LIDAR', 'LIGAR', 'LIMPO', 'LIVRO',
+  'LONGE', 'LUCRO', 'LUGAR', 'LUZES', 'LÁPIS', 'LEQUE',
+
+  'MACHO', 'MACIO', 'MAGRO', 'MALHA', 'MAMÃE', 'MANGA', 'MANHÃ', 'MANSO', 'MARCA', 'MARES',
+  'MASSA', 'MEIGO', 'MENOS', 'MENTE', 'MESMO', 'METAL', 'METRO', 'MINHA', 'MOEDA', 'MOLHO',
+  'MONTE', 'MORAL', 'MORRO', 'MOTOR', 'MUDAR', 'MUITO', 'MUNDO', 'MURAL',
+
+  'NAÇÃO', 'NADAR', 'NAIPE', 'NARIZ', 'NASCE', 'NATAL', 'NINHO', 'NOBRE', 'NOITE', 'NOMES',
+  'NORMA', 'NORTE', 'NOSSO', 'NUVEM', 'NUNCA',
+
+  'OBRAS', 'OESTE', 'OLHAR', 'ONTEM', 'OPÇÃO', 'ORDEM', 'ÓRGÃO', 'OSSOS', 'OUTRO', 'OUVIR',
+
+  'PADRE', 'PALCO', 'PALHA', 'PAPEL', 'PARAR', 'PARTE', 'PASSO', 'PASTA', 'PAVIO', 'PEDRA',
+  'PEIXE', 'PERDA', 'PERNA', 'PERTO', 'PESCA', 'PIANO', 'PILHA', 'PINHO', 'PINTA', 'PISCA',
+  'PIZZA', 'PLANO', 'PLUMA', 'PODER', 'POEMA', 'PONTE', 'PORTA', 'PORTE', 'POUCO', 'PRAIA',
+  'PRATO', 'PRAZO', 'PRESO', 'PREÇO', 'PRIMA', 'PROVA', 'PUDOR', 'PULAR', 'PUNHO',
+
+  'QUASE', 'QUERO', 'QUILO',
+
+  'RÁDIO', 'RAIVA', 'RASGO', 'RAZÃO', 'RECÉM', 'REINO', 'RELVA', 'RENDA', 'RITMO', 'RIVAL',
+  'ROCHA', 'RODAR', 'ROSTO', 'ROUPA', 'RUBRO', 'RUÍDO',
+
+  'SABER', 'SAGAZ', 'SAÍDA', 'SALVO', 'SANTO', 'SAÚDE', 'SELVA', 'SENSO', 'SÉRIO', 'SERRA',
+  'SETOR', 'SINAL', 'SOBRA', 'SOLAR', 'SONHO', 'SORTE', 'SUADO', 'SUBIR', 'SULCO', 'SUMIR',
+
+  'TÁBUA', 'TANTO', 'TARDE', 'TECLA', 'TEMPO', 'TENHO', 'TERMO', 'TERNO', 'TERRA', 'TEXTO',
+  'TIGRE', 'TINTA', 'TOCAR', 'TODOS', 'TOLDO', 'TOMAR', 'TONEL', 'TORRE', 'TOTAL', 'TRAGO',
+  'TRAMA', 'TREVO', 'TRIBO', 'TRIGO', 'TROCA',
+
+  'UNIÃO', 'ÚNICO', 'URUBU', 'USADO', 'USINA',
+
+  'VAGÃO', 'VALOR', 'VAPOR', 'VAZIO', 'VEADO', 'VELHO', 'VENDA', 'VENTO', 'VERÃO', 'VERDE',
+  'VERSO', 'VESTE', 'VIGOR', 'VINHO', 'VIRAR', 'VIVER', 'VOLTA', 'VOTAR', 'VULTO',
+
+  'ZEBRA', 'ZERAR', 'ZINCO'
+];

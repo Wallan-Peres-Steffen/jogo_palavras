@@ -1,0 +1,1019 @@
+/* ==========================================================================
+   components.css — telas, tabuleiro, teclado, modais e afins
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Início
+   -------------------------------------------------------------------------- */
+
+.tela-inicial {
+  justify-content: center;
+  gap: var(--sp-4);
+  padding-top: var(--sp-2);
+}
+
+.chip-data {
+  align-self: center;
+  padding: 7px 13px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: rgba(28, 31, 61, 0.6);
+  color: var(--creme-dim);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  padding: 22px 20px;
+  border: 1px solid var(--borda);
+  border-radius: var(--r-l);
+  background: linear-gradient(180deg, rgba(42, 48, 96, 0.55) 0%, rgba(28, 31, 61, 0.94) 62%);
+  box-shadow: var(--sh-2);
+}
+
+.card-dia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.card-dia::before {
+  content: '';
+  position: absolute;
+  top: -74px;
+  right: -54px;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 181, 68, 0.34) 0%, rgba(242, 181, 68, 0) 68%);
+  pointer-events: none;
+}
+
+.card-dia::after {
+  content: '';
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--mel), var(--coral) 55%, transparent);
+  opacity: 0.7;
+}
+
+.card-dia > * {
+  position: relative;
+  z-index: 1;
+}
+
+.resultado-hoje {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.resultado-hoje.ok {
+  background: rgba(47, 125, 80, 0.18);
+  border: 1px solid rgba(47, 125, 80, 0.55);
+  color: #9fe0ba;
+}
+
+.resultado-hoje.nao {
+  background: rgba(228, 103, 76, 0.12);
+  border: 1px solid rgba(228, 103, 76, 0.45);
+  color: #f4b1a1;
+}
+
+.streak-linha {
+  color: var(--mel);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.grade-acoes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+.acao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 78px;
+  padding: 12px;
+  border: 1px solid var(--borda);
+  border-radius: var(--r-m);
+  background: rgba(28, 31, 61, 0.72);
+  color: var(--creme);
+  font-size: 14px;
+  font-weight: 700;
+  transition: border-color 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+}
+
+.acao span {
+  font-size: 21px;
+  line-height: 1;
+}
+
+.acao:hover {
+  border-color: #59639b;
+  background: rgba(42, 48, 96, 0.72);
+  transform: translateY(-1px);
+}
+
+.link-como {
+  align-self: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 0;
+  background: none;
+  color: var(--creme-dim);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgba(185, 180, 201, 0.5);
+  text-underline-offset: 4px;
+}
+
+.link-como:hover {
+  color: var(--mel);
+}
+
+.confianca {
+  align-self: center;
+  color: #8f8aa6;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Partida
+   -------------------------------------------------------------------------- */
+
+.tela-jogo {
+  gap: var(--sp-2);
+  padding-top: var(--sp-2);
+}
+
+.topo-partida {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.progresso {
+  flex: 1;
+  color: var(--creme-dim);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.progresso b {
+  color: var(--creme);
+  font-variant-numeric: tabular-nums;
+}
+
+.modo-tag {
+  flex: none;
+  padding: 6px 10px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  color: var(--mel);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.board {
+  width: min(100%, 330px);
+  margin: 12px auto 0;
+  display: grid;
+  gap: 7px;
+}
+
+.linha {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 7px;
+}
+
+.casa {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--borda-casa);
+  border-radius: 10px;
+  background: rgba(28, 31, 61, 0.55);
+  color: var(--creme);
+  font-family: var(--font-mono);
+  font-size: clamp(21px, 7.2vw, 27px);
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: transform 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.casa.preenchida {
+  border-color: #626ca0;
+  transform: scale(1.035);
+}
+
+.casa.certo,
+.casa.presente,
+.casa.ausente {
+  border-color: transparent;
+  color: #fff;
+}
+
+.casa.certo {
+  background: var(--verde);
+  border-color: var(--verde);
+}
+
+.casa.presente {
+  background: var(--amarelo);
+  border-color: var(--amarelo);
+  color: #2b1d00;
+}
+
+.casa.ausente {
+  background: var(--cinza);
+  border-color: var(--cinza);
+  color: var(--creme-dim);
+}
+
+/* Símbolos do modo daltônico (cor + forma) */
+[data-theme='daltonico'] .casa.certo::after,
+[data-theme='colorblind'] .casa.certo::after,
+[data-theme='daltonico'] .casa.presente::after,
+[data-theme='colorblind'] .casa.presente::after,
+[data-theme='daltonico'] .casa.ausente::after,
+[data-theme='colorblind'] .casa.ausente::after {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 9px;
+  line-height: 1;
+  opacity: 0.95;
+}
+
+[data-theme='daltonico'] .casa.certo::after,
+[data-theme='colorblind'] .casa.certo::after {
+  content: '▲';
+}
+
+[data-theme='daltonico'] .casa.presente::after,
+[data-theme='colorblind'] .casa.presente::after {
+  content: '●';
+}
+
+[data-theme='daltonico'] .casa.ausente::after,
+[data-theme='colorblind'] .casa.ausente::after {
+  content: '✕';
+}
+
+.dica {
+  width: min(100%, 330px);
+  margin: 12px auto 0;
+  padding: 10px 12px;
+  border: 1px dashed var(--borda);
+  border-radius: 12px;
+  background: rgba(18, 20, 42, 0.45);
+  color: var(--creme-dim);
+  font-size: 12.5px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.dica[hidden] {
+  display: none;
+}
+
+.dica b {
+  color: var(--creme);
+}
+
+.keyboard {
+  width: min(100%, 380px);
+  margin: 12px auto 0;
+  padding-top: 2px;
+  display: grid;
+  gap: 6px;
+}
+
+.tela-jogo .keyboard {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.tecla-linha {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.tecla {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 4px;
+  border: 1px solid #3a4170;
+  border-radius: var(--r-s);
+  background: #2a2f57;
+  color: var(--creme);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: background-color 0.12s ease, border-color 0.12s ease, transform 0.1s ease;
+}
+
+.tecla:active {
+  transform: translateY(1px);
+}
+
+.tecla:hover {
+  border-color: #59639b;
+}
+
+.tecla.larga {
+  flex: 1.55;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.tecla.certo {
+  background: var(--verde);
+  border-color: var(--verde);
+  color: #fff;
+}
+
+.tecla.presente {
+  background: var(--amarelo);
+  border-color: var(--amarelo);
+  color: #2b1d00;
+}
+
+.tecla.ausente {
+  background: #23264a;
+  border-color: #23264a;
+  color: #a9a3bd;
+}
+
+/* Símbolos do modo daltônico também no teclado virtual. */
+[data-theme='daltonico'] .tecla.certo::after,
+[data-theme='colorblind'] .tecla.certo::after,
+[data-theme='daltonico'] .tecla.presente::after,
+[data-theme='colorblind'] .tecla.presente::after,
+[data-theme='daltonico'] .tecla.ausente::after,
+[data-theme='colorblind'] .tecla.ausente::after {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  font-size: 8px;
+  line-height: 1;
+  opacity: 0.95;
+}
+
+[data-theme='daltonico'] .tecla.certo::after,
+[data-theme='colorblind'] .tecla.certo::after {
+  content: '▲';
+}
+
+[data-theme='daltonico'] .tecla.presente::after,
+[data-theme='colorblind'] .tecla.presente::after {
+  content: '●';
+}
+
+[data-theme='daltonico'] .tecla.ausente::after,
+[data-theme='colorblind'] .tecla.ausente::after {
+  content: '✕';
+}
+
+.atalho {
+  margin: 10px auto 0;
+  color: #a9a3bd;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Estatísticas
+   -------------------------------------------------------------------------- */
+
+.tela-stats {
+  gap: var(--sp-4);
+  padding-top: var(--sp-2);
+}
+
+.tela-stats .btn-voltar {
+  align-self: flex-start;
+}
+
+.tela-stats .h-1 {
+  margin-top: -4px;
+}
+
+.grade-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-2);
+}
+
+.stat {
+  padding: 14px 8px;
+  border: 1px solid var(--borda);
+  border-radius: var(--r-m);
+  background: rgba(28, 31, 61, 0.72);
+  text-align: center;
+}
+
+.stat b {
+  display: block;
+  color: var(--creme);
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat span {
+  display: block;
+  margin-top: 3px;
+  color: var(--creme-dim);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* São sete cartões: o último (média) ocupa a linha inteira. */
+.grade-stats .stat:last-child {
+  grid-column: 1 / -1;
+}
+
+.histograma {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 7px;
+  height: 148px;
+  padding: 12px 12px 8px;
+  border: 1px solid var(--borda);
+  border-radius: var(--r-m);
+  background: rgba(28, 31, 61, 0.55);
+}
+
+.barra-col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.barra-num {
+  color: var(--creme-dim);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.barra {
+  width: 100%;
+  max-width: 34px;
+  max-height: 92px;
+  height: max(4px, var(--h, 0%));
+  border-radius: 6px 6px 3px 3px;
+  background: linear-gradient(180deg, var(--mel), #d99a2a);
+  animation: barra-sobe 0.45s ease both;
+}
+
+.barra.zero {
+  background: #2a2f57;
+}
+
+.barra-rotulo {
+  color: var(--creme-dim);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.nota {
+  padding: 12px 14px;
+  border-left: 3px solid var(--mel);
+  border-radius: 0 10px 10px 0;
+  background: rgba(242, 181, 68, 0.07);
+  color: var(--creme-dim);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+/* --------------------------------------------------------------------------
+   Modal
+   -------------------------------------------------------------------------- */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  background: rgba(5, 6, 17, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.modal {
+  position: relative;
+  width: min(100%, 420px);
+  max-height: 88dvh;
+  overflow-y: auto;
+  padding: 22px 20px;
+  border: 1px solid var(--borda);
+  border-radius: var(--r-l);
+  background: linear-gradient(180deg, #252a52 0%, #171a34 100%);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  animation: modal-sobe 0.26s ease both;
+}
+
+.modal h2 {
+  margin: 0 26px 12px 0;
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+.modal-corpo {
+  color: var(--creme-dim);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.modal-corpo p + p {
+  margin-top: 8px;
+}
+
+.modal-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.modal-acoes .btn {
+  width: 100%;
+}
+
+.modal-fechar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--borda);
+  border-radius: 50%;
+  background: rgba(18, 20, 42, 0.6);
+  color: var(--creme-dim);
+  font-size: 17px;
+  line-height: 1;
+}
+
+.modal-fechar:hover {
+  color: var(--creme);
+}
+
+/* Resultado */
+.resultado-emoji {
+  margin: 2px 0 6px;
+  font-size: 44px;
+  line-height: 1;
+  text-align: center;
+}
+
+.resultado-palavra {
+  margin-bottom: 10px;
+  color: var(--creme);
+  font-size: 14px;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.resultado-palavra strong {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 27px;
+  letter-spacing: 0.14em;
+}
+
+.grade-emoji {
+  margin: 12px auto 0;
+  padding: 12px;
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  background: rgba(18, 20, 42, 0.55);
+  font-family: var(--font-mono);
+  font-size: 16px;
+  line-height: 1.35;
+  letter-spacing: 0.1em;
+  text-align: center;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.placar {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-4);
+  margin-top: 12px;
+}
+
+.placar div {
+  text-align: center;
+}
+
+.placar b {
+  display: block;
+  color: var(--mel);
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.placar span {
+  color: var(--creme-dim);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Como jogar */
+.exemplo-grade {
+  display: grid;
+  gap: 5px;
+  width: 148px;
+  margin: 12px auto;
+}
+
+.exemplo-grade .linha {
+  gap: 5px;
+}
+
+.exemplo-grade .casa {
+  border-width: 1px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.legenda {
+  display: grid;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.legenda li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+}
+
+.legenda .amostra {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.amostra.certo {
+  background: var(--verde);
+}
+
+.amostra.presente {
+  background: var(--amarelo);
+  color: #2b1d00;
+}
+
+.amostra.ausente {
+  background: var(--cinza);
+}
+
+/* Ajustes */
+.ajuste {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(51, 58, 102, 0.6);
+}
+
+.ajuste:last-of-type {
+  border-bottom: 0;
+}
+
+.ajuste b {
+  display: block;
+  color: var(--creme);
+  font-size: 14px;
+}
+
+.ajuste .mini {
+  display: block;
+  margin-top: 2px;
+}
+
+.toggle {
+  flex: none;
+  min-width: 62px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: rgba(18, 20, 42, 0.6);
+  color: var(--creme-dim);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.toggle[aria-pressed='true'] {
+  border-color: var(--mel);
+  background: rgba(242, 181, 68, 0.16);
+  color: var(--mel);
+}
+
+/* --------------------------------------------------------------------------
+   Toast
+   -------------------------------------------------------------------------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  z-index: 80;
+  width: max-content;
+  max-width: calc(100vw - 36px);
+  padding: 11px 16px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: #262b53;
+  color: var(--creme);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: var(--sh-2);
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast.visivel {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.toast.sucesso {
+  border-color: rgba(47, 125, 80, 0.7);
+  background: #1d3b2c;
+}
+
+/* --------------------------------------------------------------------------
+   Confete
+   -------------------------------------------------------------------------- */
+
+.confete {
+  position: absolute;
+  top: -16px;
+  width: 7px;
+  height: 12px;
+  border-radius: 2px;
+  pointer-events: none;
+  animation: confete-cai 1.6s linear both;
+}
+
+@media (min-width: 560px) {
+  .modal-backdrop {
+    align-items: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Aviso de armazenamento bloqueado
+   -------------------------------------------------------------------------- */
+
+.aviso-storage {
+  width: min(calc(100% - 36px), 444px);
+  margin: 0 auto 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(228, 103, 76, 0.45);
+  border-radius: 10px;
+  background: rgba(228, 103, 76, 0.12);
+  color: #f4b1a1;
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+/* Telas baixas (ex.: 360×640): compacta o jogo sem esconder o teclado. */
+@media (max-height: 720px) {
+  .topbar {
+    padding-top: 10px;
+  }
+
+  .tela-jogo {
+    gap: 4px;
+    padding-top: 0;
+  }
+
+  .board {
+    width: min(100%, 292px);
+    margin-top: 6px;
+    gap: 5px;
+  }
+
+  .linha {
+    gap: 5px;
+  }
+
+  .tecla-linha {
+    gap: 4px;
+  }
+
+  .tecla {
+    min-height: 44px;
+  }
+
+  .keyboard {
+    gap: 4px;
+    padding-top: 6px;
+  }
+
+  .dica {
+    margin-top: 6px;
+    padding: 8px 10px;
+  }
+
+  .atalho {
+    display: none;
+  }
+}
+
+@media (max-height: 640px) {
+  .topbar {
+    padding-top: 6px;
+    padding-bottom: 2px;
+  }
+
+  .marca .emblema {
+    width: 30px;
+    height: 30px;
+  }
+
+  .marca-texto {
+    font-size: 17px;
+  }
+
+  .tela-jogo {
+    gap: 2px;
+  }
+
+  .topo-partida {
+    min-height: 40px;
+  }
+
+  .board {
+    width: min(100%, 262px);
+    margin-top: 4px;
+    gap: 4px;
+  }
+
+  .linha {
+    gap: 4px;
+  }
+
+  .casa {
+    border-width: 1px;
+    border-radius: 7px;
+    font-size: clamp(18px, 6.6vw, 22px);
+  }
+
+  .keyboard {
+    gap: 3px;
+    padding-top: 4px;
+    margin-top: 2px;
+  }
+
+  .tecla-linha {
+    gap: 4px;
+  }
+
+  .tecla {
+    min-height: 44px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+
+  .tecla.larga {
+    font-size: 10px;
+  }
+
+  .dica {
+    margin-top: 4px;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .progresso {
+    font-size: 12px;
+  }
+
+  .modo-tag {
+    padding: 4px 8px;
+    font-size: 9px;
+  }
+
+  .tela-inicial {
+    gap: 10px;
+    padding-top: 0;
+  }
+
+  .tela-inicial .card {
+    padding: 16px;
+  }
+
+  .tela-inicial .card-dia {
+    gap: 8px;
+  }
+
+  .tela-inicial .h-display {
+    font-size: 30px;
+  }
+
+  .grade-acoes .acao {
+    min-height: 64px;
+  }
+
+  .confianca {
+    display: none;
+  }
+}
+
+/* Telas muito estreitas (320px): menos padding e tabuleiro menor para manter
+   o teclado acessível. As teclas ficam com ~24px de largura, o mínimo AA. */
+@media (max-width: 340px) {
+  #app {
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .aviso-storage {
+    width: calc(100% - 28px);
+  }
+
+  .tela-jogo {
+    gap: 0;
+  }
+
+  .tela-jogo .board {
+    width: min(100%, 220px);
+  }
+
+  .dica {
+    padding: 5px 7px;
+    font-size: 10.5px;
+  }
+
+  .tecla-linha {
+    gap: 3px;
+  }
+
+  .tecla {
+    font-size: 12px;
+  }
+}

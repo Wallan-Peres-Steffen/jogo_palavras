@@ -1,0 +1,149 @@
+/* ==========================================================================
+   animations.css — movimento com propósito + respeito a preferências
+   ========================================================================== */
+
+@keyframes tela-entra {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes flip-casa {
+  0% {
+    transform: rotateX(0deg) scale(1);
+  }
+  45% {
+    transform: rotateX(90deg) scale(1.04);
+  }
+  100% {
+    transform: rotateX(0deg) scale(1);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes streak-pulso {
+  0% {
+    transform: scale(0.86);
+    box-shadow: 0 0 0 0 rgba(242, 181, 68, 0.45);
+  }
+  60% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 9px rgba(242, 181, 68, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(242, 181, 68, 0);
+  }
+}
+
+@keyframes sol-nasce {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes confete-cai {
+  0% {
+    opacity: 1;
+    transform: translateY(-10px) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(430px) rotate(520deg);
+  }
+}
+
+@keyframes modal-sobe {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes barra-sobe {
+  from {
+    height: 0;
+    opacity: 0.4;
+  }
+  to {
+    height: max(4px, var(--h, 0%));
+    opacity: 1;
+  }
+}
+
+/* Casa recém-revelada */
+.casa.revelar {
+  animation: flip-casa 0.55s ease both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Tabuleiro inválido */
+.board.tremer {
+  animation: shake 0.36s ease;
+}
+
+/* Selo de sequência */
+.selo-streak.pulso {
+  animation: streak-pulso 0.7s ease;
+}
+
+/* Marca (sol) */
+.emblema {
+  animation: sol-nasce 0.6s ease both;
+}
+
+/* --------------------------------------------------------------------------
+   Preferências de movimento
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+[data-motion='off'] *,
+[data-motion='off'] *::before,
+[data-motion='off'] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}

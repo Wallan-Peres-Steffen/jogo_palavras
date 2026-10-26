@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="padrao" data-motion="on">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#12142A" />
+    <meta
+      name="description"
+      content="Palavra do Dia: um jogo diário de adivinhação de palavras em português. Cinco letras, seis tentativas, sem cadastro."
+    />
+    <title>Palavra do Dia — cinco letras, seis tentativas</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='11' fill='%2312142A'/%3E%3Ccircle cx='24' cy='17' r='8' fill='%23F2B544'/%3E%3Crect x='5' y='30' width='7' height='7' rx='2' fill='%232F7D50'/%3E%3Crect x='13.5' y='30' width='7' height='7' rx='2' fill='%23E9B949'/%3E%3Crect x='22' y='30' width='7' height='7' rx='2' fill='%2333365A'/%3E%3Crect x='30.5' y='30' width='7' height='7' rx='2' fill='%232F7D50'/%3E%3Crect x='39' y='30' width='7' height='7' rx='2' fill='%23E9B949'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./css/tokens.css" />
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/animations.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Pular para o jogo</a>
+
+    <header class="topbar">
+      <button class="marca" type="button" data-action="inicio" aria-label="Palavra do Dia — ir para o início">
+        <svg class="emblema" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="grad-sol" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#F6C262" />
+              <stop offset="1" stop-color="#E4674C" />
+            </linearGradient>
+          </defs>
+          <circle cx="24" cy="16.5" r="9" fill="url(#grad-sol)" />
+          <rect x="3" y="30" width="8" height="8" rx="2" fill="#2F7D50" />
+          <rect x="11.5" y="30" width="8" height="8" rx="2" fill="#E9B949" />
+          <rect x="20" y="30" width="8" height="8" rx="2" fill="#33365A" />
+          <rect x="28.5" y="30" width="8" height="8" rx="2" fill="#2F7D50" />
+          <rect x="37" y="30" width="8" height="8" rx="2" fill="#E9B949" />
+        </svg>
+        <span class="marca-texto">Palavra<span>do Dia</span></span>
+      </button>
+
+      <div class="topbar-acoes">
+        <button class="selo-streak" id="selo-streak" type="button" data-action="stats" hidden>
+          <span aria-hidden="true">🔥</span> <b>0</b>
+        </button>
+        <button class="btn-icone" type="button" data-action="ajustes" aria-label="Abrir ajustes">
+          <span aria-hidden="true">⚙</span>
+        </button>
+      </div>
+    </header>
+
+    <p id="aviso-storage" class="aviso-storage" role="status" hidden>
+      Este navegador está bloqueando o salvamento. O progresso vale só nesta aba.
+    </p>
+
+    <main id="app" tabindex="-1"></main>
+
+    <div id="live-polite" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+    <div id="live-alert" class="sr-only" role="alert" aria-atomic="true"></div>
+    <div id="toast" class="toast" role="status"></div>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>

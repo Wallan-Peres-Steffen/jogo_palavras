@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palavra do Dia — Protótipo Acessível</title>
+<style>
+  /* ============================================================
+     TEMA PADRÃO — contraste AA como piso, AAA onde possível
+     ============================================================ */
+  :root{
+    --bg: #f4f4f5;
+    --superficie: #ffffff;
+    --texto: #1a1a2e;            /* 17:1 sobre branco — AAA */
+    --texto-suave: #3f3f46;      /* 10,5:1 sobre branco — AAA */
+    --borda: #52525b;
+    --borda-suave: #d4d4d8;
+    --verde: #166534;            /* 7,1:1 com texto branco — AAA */
+    --amarelo: #b45309;          /* 5,0:1 com texto branco — AA */
+    --cinza: #3f3f46;            /* 10,5:1 com texto branco — AAA */
+    --destaque: #1e40af;
+    --erro: #b91c1c;
+    --foco: #0b57d0;
+    --halo-foco: rgba(11,87,208,.25);
+    --raio: 10px;
+  }
+
+  /* ============================================================
+     MODO DALTÔNICO / ALTO CONTRASTE — azul · laranja · cinza-escuro
+     Todos os pares de texto/fundo acima de 7:1 (AAA).
+     ============================================================ */
+  body.modo-daltonico{
+    --verde: #1e40af;            /* 8,7:1 com texto branco — AAA */
+    --amarelo: #9a3412;          /* 7,3:1 com texto branco — AAA */
+    --cinza: #27272a;            /* 14:1 com texto branco — AAA */
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ font-size: 100%; } /* texto em rem → escala com o zoom do navegador */
+
+  body{
+    margin: 0;
+    background: var(--bg);
+    color: var(--texto);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  /* ---------- Foco visível sempre (WCAG 2.4.7) ---------- */
+  :focus-visible{
+    outline: 3px solid var(--foco);
+    outline-offset: 2px;
+    border-radius: 6px;
+    box-shadow: 0 0 0 6px var(--halo-foco);
+  }
+  /* demonstração: o botão principal exibe o anel de foco mesmo sem interação */
+  .demo-foco{
+    outline: 3px solid var(--foco) !important;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 6px var(--halo-foco);
+  }
+
+  /* ---------- Utilitários ---------- */
+  .sr-only{
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .pular-conteudo{
+    position: absolute; left: 8px; top: -60px;
+    background: var(--destaque); color: #fff;
+    padding: 12px 18px; border-radius: 8px;
+    font-weight: 700; text-decoration: none; z-index: 50;
+    transition: top .15s ease-out;
+  }
+  .pular-conteudo:focus{ top: 8px; }
+
+  /* ---------- Estrutura ---------- */
+  .app{
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+  header.cabecalho{
+    background: var(--superficie);
+    border-bottom: 2px solid var(--borda-suave);
+    padding: 14px 16px 10px;
+  }
+  .cabecalho h1{
+    margin: 0;
+    font-size: 1.45rem;
+    letter-spacing: .02em;
+  }
+  .cabecalho .slogan{
+    margin: 2px 0 10px;
+    color: var(--texto-suave);
+    font-size: .9rem;
+  }
+
+  /* ---------- Controles de acessibilidade ---------- */
+  .controles{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .controles button{
+    flex: 1 1 46%;
+    min-height: 48px;             /* ≥ 44px (WCAG 2.5.5) */
+    padding: 8px 10px;
+    font-size: .85rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--texto);
+    background: var(--bg);
+    border: 2px solid var(--borda);
+    border-radius: var(--raio);
+    cursor: pointer;
+  }
+  .controles button[aria-pressed="true"]{
+    background: var(--destaque);
+    color: #fff;
+    border-color: var(--destaque);
+  }
+
+  /* ---------- Abas de navegação ---------- */
+  nav.abas{
+    background: var(--superficie);
+    border-bottom: 2px solid var(--borda-suave);
+    padding: 0 8px;
+  }
+  nav.abas ul{
+    list-style: none;
+    margin: 0; padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+  }
+  nav.abas button{
+    width: 100%;
+    min-height: 48px;
+    font-family: inherit;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--texto-suave);
+    background: transparent;
+    border: 0;
+    border-bottom: 4px solid transparent;
+    cursor: pointer;
+  }
+  nav.abas button[aria-selected="true"]{
+    color: var(--destaque);
+    border-bottom-color: var(--destaque);
+  }
+
+  main{ flex: 1; padding: 16px; }
+  section[role="tabpanel"]{ display: block; }
+  section[role="tabpanel"][hidden]{ display: none; }
+  h2{ font-size: 1.15rem; margin: 0 0 4px; }
+  .apoio{ color: var(--texto-suave); font-size: .9rem; margin: 0 0 14px; }
+
+  /* ---------- Botões gerais ---------- */
+  .botao{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 52px;             /* alvo de toque grande */
+    padding: 12px 16px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: var(--raio);
+    border: 2px solid var(--destaque);
+    background: var(--superficie);
+    color: var(--destaque);
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  .botao.principal{
+    background: var(--destaque);
+    color: #fff;
+    font-size: 1.1rem;
+    min-height: 60px;
+  }
+  .selo-streak{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--superficie);
+    border: 2px solid var(--borda-suave);
+    border-left: 8px solid var(--amarelo);
+    border-radius: var(--raio);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  .selo-streak span apoio{ font-weight: 400; }
+
+  /* ---------- Tabuleiro ---------- */
+  .tabuleiro{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 320px;
+    margin: 0 auto 16px;
+  }
+  .linha{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .celula{
+    aspect-ratio: 1 / 1;          /* ~59×59px — alvo grande */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    border: 3px solid var(--borda);
+    border-radius: 8px;
+    background: var(--superficie);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--texto);
+    line-height: 1;
+  }
+  .celula .simbolo{
+    display: none;                /* símbolo aparece no modo daltônico */
+    font-size: .85rem;
+    margin-top: 3px;
+    line-height: 1;
+  }
+  body.modo-daltonico .celula .simbolo{ display: block; }
+  .celula.verde{ background: var(--verde); border-color: var(--verde); color: #fff; }
+  .celula.amarelo{ background: var(--amarelo); border-color: var(--amarelo); color: #fff; }
+  .celula.cinza{ background: var(--cinza); border-color: var(--cinza); color: #fff; }
+  .celula.ativa{ border-color: var(--destaque); border-style: dashed; }
+  .celula.ativa .cursor{
+    width: 55%; height: 4px;
+    background: var(--destaque);
+    border-radius: 2px;
+  }
+
+  .legenda{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    justify-content: center;
+    background: var(--superficie);
+    border: 2px solid var(--borda-suave);
+    border-radius: var(--raio);
+    padding: 10px;
+    margin: 0 auto 14px;
+    font-size: .85rem;
+    color: var(--texto);
+  }
+  .legenda b{ font-size: 1rem; }
+
+  .status-tentativa{
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .barra-progresso{
+    height: 10px;
+    background: var(--borda-suave);
+    border-radius: 6px;
+    overflow: hidden;
+    max-width: 320px;
+    margin: 0 auto 14px;
+  }
+  .barra-progresso div{
+    height: 100%;
+    width: 50%;                   /* tentativa 4 de 6 */
+    background: var(--destaque);
+  }
+
+  .dica-onboarding{
+    background: var(--superficie);
+    border: 2px dashed var(--destaque);
+    border-radius: var(--raio);
+    padding: 10px 12px;
+    font-size: .88rem;
+    margin-bottom: 10px;
+  }
+  .dica-onboarding strong{ color: var(--destaque); }
+
+  .mensagem{
+    border-radius: var(--raio);
+    padding: 10px 12px;
+    font-size: .9rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .mensagem.erro{
+    background: #fee2e2;
+    border: 2px solid var(--erro);
+    color: #7f1d1d;               /* 8,9:1 sobre #fee2e2 — AAA */
+  }
+
+  /* ---------- Teclado virtual ---------- */
+  .teclado{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+  .teclado .teclas{
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+  }
+  .tecla{
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 52px;             /* altura ≥ 44px (WCAG 2.5.5) */
+    font-family: inherit;
+    font-size: .95rem;
+    font-weight: 700;
+    border: 2px solid var(--borda);
+    border-radius: 8px;
+    background: var(--superficie);
+    color: var(--texto);
+    cursor: pointer;
+  }
+  .tecla.verde{ background: var(--verde); border-color: var(--verde); color: #fff; }
+  .tecla.amarelo{ background: var(--amarelo); border-color: var(--amarelo); color: #fff; }
+  .tecla.cinza{ background: var(--cinza); border-color: var(--cinza); color: #fff; }
+  .tecla.larga{ flex: 1.6 1 0; font-size: .78rem; }
+
+  /* ---------- Modal de vitória ---------- */
+  .fundo-modal{
+    background: rgba(26,26,46,.72);
+    border-radius: var(--raio);
+    padding: 14px;
+  }
+  .modal{
+    background: var(--superficie);
+    border-radius: var(--raio);
+    padding: 18px 16px;
+  }
+  .modal h2{ text-align: center; font-size: 1.3rem; }
+  .modal .sub{ text-align: center; color: var(--texto-suave); margin: 0 0 12px; }
+  .palavra-revelada{
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .palavra-revelada span{
+    width: 46px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--verde);
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.3rem;
+    border-radius: 8px;
+  }
+  .cartao-streak{
+    text-align: center;
+    background: var(--bg);
+    border: 2px solid var(--borda-suave);
+    border-radius: var(--raio);
+    padding: 8px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .grade-emojis{
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+  .grade-emojis p{
+    margin: 0 0 6px;
+    font-size: .8rem;
+    color: var(--texto-suave);
+    text-align: center;
+  }
+  .grade-emojis .gl{ text-align: center; font-size: 1.15rem; letter-spacing: .12em; line-height: 1.4; }
+  .confirmacao{
+    min-height: 24px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--verde);
+    margin: 0 0 10px;
+  }
+  body.modo-daltonico .confirmacao{ color: var(--destaque); }
+
+  /* ---------- Estatísticas ---------- */
+  .cartoes{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .cartao-num{
+    background: var(--superficie);
+    border: 2px solid var(--borda-suave);
+    border-radius: var(--raio);
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .cartao-num .valor{ font-size: 1.5rem; font-weight: 800; color: var(--destaque); }
+  .cartao-num .rotulo{ font-size: .78rem; color: var(--texto-suave); font-weight: 600; }
+
+  .histograma{
+    background: var(--superficie);
+    border: 2px solid var(--borda-suave);
+    border-radius: var(--raio);
+    padding: 14px 12px 8px;
+  }
+  .histograma h3{ margin: 0 0 10px; font-size: 1rem; }
+  .barras{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    align-items: end;
+    height: 150px;
+  }
+  .barra{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    gap: 3px;
+  }
+  .barra .qtd{ font-size: .75rem; font-weight: 700; }
+  .barra .coluna{
+    width: 100%;
+    background: var(--destaque);
+    border-radius: 4px 4px 0 0;
+    min-height: 3px;
+  }
+  .barra.atual .coluna{ background: var(--verde); }
+  .eixo{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    text-align: center;
+    font-size: .78rem;
+    color: var(--texto-suave);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  /* ---------- Painel de notas de acessibilidade ---------- */
+  .notas{
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    max-width: 430px;
+    margin: 0 auto;
+    max-height: 68vh;
+    overflow-y: auto;
+    background: var(--superficie);
+    border-top: 4px solid var(--destaque);
+    border-radius: 14px 14px 0 0;
+    padding: 14px 16px 20px;
+    box-shadow: 0 -6px 24px rgba(0,0,0,.35);
+    z-index: 40;
+  }
+  .notas[hidden]{ display: none; }
+  .notas h2{ font-size: 1.05rem; margin: 0 0 8px; }
+  .notas h3{ font-size: .92rem; margin: 12px 0 4px; color: var(--destaque); }
+  .notas ul{ margin: 0; padding-left: 18px; }
+  .notas li{ font-size: .86rem; margin-bottom: 5px; }
+  .notas .fechar{
+    position: sticky;
+    top: 0;
+    float: right;
+    min-height: 44px;
+    min-width: 44px;
+    font-family: inherit;
+    font-weight: 800;
+    border: 2px solid var(--borda);
+    background: var(--bg);
+    color: var(--texto);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  footer{
+    padding: 12px 16px 20px;
+    color: var(--texto-suave);
+    font-size: .8rem;
+    text-align: center;
+    border-top: 2px solid var(--borda-suave);
+    background: var(--superficie);
+  }
+
+  /* ============================================================
+     MOVIMENTO REDUZIDO — media query + classe manual via JS
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+    .pular-conteudo{ transition: none; }
+  }
+  body.sem-movimento *{
+    animation: none !important;
+    transition: none !important;
+  }
+  @keyframes flutuar{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-3px); } }
+  body:not(.sem-movimento) .dica-onboarding{ animation: flutuar 2.4s ease-in-out infinite; }
+</style>
+</head>
+<body class="modo-daltonico">
+
+<a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="app">
+
+  <!-- ============================ CABEÇALHO ============================ -->
+  <header class="cabecalho">
+    <h1>Palavra do Dia</h1>
+    <p class="slogan">Adivinhe a palavra de 5 letras em 6 tentativas.</p>
+
+    <div class="controles" role="group" aria-label="Preferências de acessibilidade">
+      <button type="button" id="btnModoCor" aria-pressed="true">
+        🟦 Modo daltônico: ligado
+      </button>
+      <button type="button" id="btnReduzir" aria-pressed="false">
+        🎬 Reduzir animações: desligado
+      </button>
+      <button type="button" id="btnNotas" aria-pressed="false" aria-controls="painelNotas">
+        📝 Notas de acessibilidade
+      </button>
+      <button type="button" id="btnAjuda">
+        ❓ Como jogar
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================ ABAS ============================ -->
+  <nav class="abas" aria-label="Telas do protótipo">
+    <div role="tablist" aria-label="Escolha a tela">
+      <ul>
+        <li><button type="button" role="tab" id="aba-inicial" aria-controls="tela-inicial" aria-selected="true">Inicial</button></li>
+        <li><button type="button" role="tab" id="aba-partida" aria-controls="tela-partida" aria-selected="false" tabindex="-1">Partida</button></li>
+        <li><button type="button" role="tab" id="aba-vitoria" aria-controls="tela-vitoria" aria-selected="false" tabindex="-1">Vitória</button></li>
+        <li><button type="button" role="tab" id="aba-stats" aria-controls="tela-stats" aria-selected="false" tabindex="-1">Estatísticas</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="conteudo" tabindex="-1">
+
+    <!-- ============================ TELA INICIAL ============================ -->
+    <section id="tela-inicial" role="tabpanel" aria-labelledby="aba-inicial" tabindex="0">
+      <h2>Bem-vindo de volta!</h2>
+      <p class="apoio">Desafio de hoje, 20 de outubro. Boa sorte!</p>
+
+      <p class="selo-streak">
+        <span>🔥 Sequência: 4 dias seguidos</span>
+        <span class="sr-only">Você venceu o desafio nos últimos 4 dias.</span>
+        <span aria-hidden="true" style="color:var(--texto-suave);font-weight:400;">4/7</span>
+      </p>
+
+      <button type="button" class="botao principal demo-foco" id="btnDesafio">
+        ▶ Desafio do Dia
+      </button>
+      <p class="apoio" style="text-align:center;margin-top:-4px;">
+        ← este botão demonstra o <strong>anel de foco visível</strong>
+      </p>
+
+      <button type="button" class="botao" data-aviso="O Modo Prática abriria uma partida aleatória, ilimitada.">🎲 Praticar</button>
+      <button type="button" class="botao" data-aviso="O Como Jogar abriria um modal curto com as regras e um exemplo.">❓ Como jogar</button>
+      <button type="button" class="botao" id="btnIrStats">📊 Estatísticas</button>
+    </section>
+
+    <!-- ============================ TELA PARTIDA ============================ -->
+    <section id="tela-partida" role="tabpanel" aria-labelledby="aba-partida" tabindex="0" hidden>
+      <h2>Desafio do Dia — 20/10</h2>
+      <p class="status-tentativa">Tentativa 4 de 6</p>
+      <div class="barra-progresso" role="img" aria-label="Progresso: 3 de 6 tentativas usadas.">
+        <div></div>
+      </div>
+
+      <p class="dica-onboarding">
+        <strong>Dica:</strong> toque nas letras do teclado abaixo. A linha verde
+        mostra letras no lugar certo.
+      </p>
+
+      <!-- Região viva: erros de validação são anunciados automaticamente -->
+      <p class="mensagem erro" id="msgPartida" role="alert">
+        ⚠️ Palavra precisa ter 5 letras. Sua tentativa não foi contada.
+      </p>
+
+      <div class="legenda" aria-label="Significado das cores e símbolos">
+        <span><b style="color:var(--verde)">■</b> <span id="legVerde">▲</span> no lugar certo</span>
+        <span><b style="color:var(--amarelo)">■</b> <span id="legAmarelo">●</span> em outra posição</span>
+        <span><b style="color:var(--cinza)">■</b> <span id="legCinza">✕</span> fora da palavra</span>
+      </div>
+
+      <div class="tabuleiro" role="group" aria-label="Tabuleiro: 6 tentativas de 5 letras">
+
+        <div class="linha" role="group" aria-label="Tentativa 1 de 6">
+          <div class="celula cinza" role="img" aria-label="linha 1, coluna 1, letra F, não está na palavra">F<span class="simbolo" aria-hidden="true">✕</span></div>
+          <div class="celula cinza" role="img" aria-label="linha 1, coluna 2, letra A, não está na palavra">A<span class="simbolo" aria-hidden="true">✕</span></div>
+          <div class="celula amarelo" role="img" aria-label="linha 1, coluna 3, letra R, amarelo, existe na palavra em outra posição">R<span class="simbolo" aria-hidden="true">●</span></div>
+          <div class="celula amarelo" role="img" aria-label="linha 1, coluna 4, letra O, amarelo, existe na palavra em outra posição">O<span class="simbolo" aria-hidden="true">●</span></div>
+          <div class="celula cinza" role="img" aria-label="linha 1, coluna 5, letra L, não está na palavra">L<span class="simbolo" aria-hidden="true">✕</span></div>
+        </div>
+
+        <div class="linha" role="group" aria-label="Tentativa 2 de 6">
+          <div class="celula cinza" role="img" aria-label="linha 2, coluna 1, letra P, não está na palavra">P<span class="simbolo" aria-hidden="true">✕</span></div>
+          <div class="celula verde" role="img" aria-label="linha 2, coluna 2, letra O, verde, no lugar certo">O<span class="simbolo" aria-hidden="true">▲</span></div>
+          <div class="celula cinza" role="img" aria-label="linha 2, coluna 3, letra N, não está na palavra">N<span class="simbolo" aria-hidden="true">✕</span></div>
+          <div class="celula cinza" role="img" aria-label="linha 2, coluna 4, letra T, não está na palavra">T<span class="simbolo" aria-hidden="true">✕</span></div>
+          <div class="celula cinza" role="img" aria-label="linha 2, coluna 5, letra O, não está na palavra">O<span class="simbolo" aria-hidden="true">✕</span></div>
+        </div>
+
+        <div class="linha" role="group" aria-label="Tentativa 3 de 6">
+          <div class="celula amarelo" role="img" aria-label="linha 3, coluna 1, letra H, amarelo, existe na palavra em outra posição">H<span class="simbolo" aria-hidden="true">●</span></div>
+          <div class="celula verde" role="img" aria-label="linha 3, coluna 2, letra O, verde, no lugar certo">O<span class="simbolo" aria-hidden="true">▲</span></div>
+          <div class="celula cinza" role="img" aria-label="linha 3, coluna 3, letra T, não está na palavra">T<span class="simbolo" aria-hidden="true">✕</span></div>
+          <div class="celula cinza" role="img" aria-label="linha 3, coluna 4, letra E, não está na palavra">E<span class="simbolo" aria-hidden="true">✕</span></div>
+          <div class="celula cinza" role="img" aria-label="linha 3, coluna 5, letra L, não está na palavra">L<span class="simbolo" aria-hidden="true">✕</span></div>
+        </div>
+
+        <div class="linha" role="group" aria-label="Tentativa 4 de 6, em preenchimento">
+          <div class="celula ativa" role="img" aria-label="linha 4, coluna 1, vazia, aguardando letra"><span class="cursor" aria-hidden="true"></span></div>
+          <div class="celula ativa" role="img" aria-label="linha 4, coluna 2, vazia, aguardando letra"><span class="cursor" aria-hidden="true"></span></div>
+          <div class="celula ativa" role="img" aria-label="linha 4, coluna 3, vazia, aguardando letra"><span class="cursor" aria-hidden="true"></span></div>
+          <div class="celula ativa" role="img" aria-label="linha 4, coluna 4, vazia, aguardando letra"><span class="cursor" aria-hidden="true"></span></div>
+          <div class="celula ativa" role="img" aria-label="linha 4, coluna 5, vazia, aguardando letra"><span class="cursor" aria-hidden="true"></span></div>
+        </div>
+
+        <div class="linha" role="group" aria-label="Tentativa 5 de 6, ainda não usada">
+          <div class="celula" role="img" aria-label="linha 5, coluna 1, vazia"></div>
+          <div class="celula" role="img" aria-label="linha 5, coluna 2, vazia"></div>
+          <div class="celula" role="img" aria-label="linha 5, coluna 3, vazia"></div>
+          <div class="celula" role="img" aria-label="linha 5, coluna 4, vazia"></div>
+          <div class="celula" role="img" aria-label="linha 5, coluna 5, vazia"></div>
+        </div>
+
+        <div class="linha" role="group" aria-label="Tentativa 6 de 6, ainda não usada">
+          <div class="celula" role="img" aria-label="linha 6, coluna 1, vazia"></div>
+          <div class="celula" role="img" aria-label="linha 6, coluna 2, vazia"></div>
+          <div class="celula" role="img" aria-label="linha 6, coluna 3, vazia"></div>
+          <div class="celula" role="img" aria-label="linha 6, coluna 4, vazia"></div>
+          <div class="celula" role="img" aria-label="linha 6, coluna 5, vazia"></div>
+        </div>
+      </div>
+
+      <div class="teclado" role="group" aria-label="Teclado virtual. Cada tecla informa a letra e o seu estado.">
+        <div class="teclas">
+          <button type="button" class="tecla">Q</button>
+          <button type="button" class="tecla">W</button>
+          <button type="button" class="tecla">E</button>
+          <button type="button" class="tecla cinza" aria-label="letra T, não está na palavra">T</button>
+          <button type="button" class="tecla">R</button>
+          <button type="button" class="tecla">Y</button>
+          <button type="button" class="tecla">U</button>
+          <button type="button" class="tecla">I</button>
+          <button type="button" class="tecla">O</button>
+          <button type="button" class="tecla">P</button>
+        </div>
+        <div class="teclas">
+          <button type="button" class="tecla">A</button>
+          <button type="button" class="tecla">S</button>
+          <button type="button" class="tecla">D</button>
+          <button type="button" class="tecla">F</button>
+          <button type="button" class="tecla">G</button>
+          <button type="button" class="tecla">H</button>
+          <button type="button" class="tecla">J</button>
+          <button type="button" class="tecla">K</button>
+          <button type="button" class="tecla">L</button>
+          <button type="button" class="tecla">Ç</button>
+        </div>
+        <div class="teclas">
+          <button type="button" class="tecla larga" aria-label="Enviar palavra">ENVIAR</button>
+          <button type="button" class="tecla">Z</button>
+          <button type="button" class="tecla cinza" aria-label="letra X, não está na palavra">X</button>
+          <button type="button" class="tecla">C</button>
+          <button type="button" class="tecla cinza" aria-label="letra V, não está na palavra">V</button>
+          <button type="button" class="tecla">B</button>
+          <button type="button" class="tecla">N</button>
+          <button type="button" class="tecla">M</button>
+          <button type="button" class="tecla larga" aria-label="Apagar a última letra">⌫</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ TELA VITÓRIA ============================ -->
+    <section id="tela-vitoria" role="tabpanel" aria-labelledby="aba-vitoria" tabindex="0" hidden>
+
+      <div class="fundo-modal">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModal" aria-describedby="descModal" id="modalVitoria">
+          <h2 id="tituloModal">🎉 Parabéns!</h2>
+          <p class="sub" id="descModal">Você acertou em 4 tentativas.</p>
+
+          <div class="palavra-revelada" role="img" aria-label="Palavra revelada: R-O-C-H-A, todas as letras no lugar certo.">
+            <span aria-hidden="true">R</span><span aria-hidden="true">O</span><span aria-hidden="true">C</span><span aria-hidden="true">H</span><span aria-hidden="true">A</span>
+          </div>
+
+          <p class="cartao-streak">🔥 Sua sequência: 4 dias <span class="sr-only">de vitórias consecutivas no desafio diário.</span></p>
+
+          <div class="grade-emojis" role="img"
+               aria-label="Sua pontuação para compartilhar: Palavra do Dia 20 de outubro, 4 de 6 tentativas. Linha 1: duas letras na palavra em outra posição e três fora. Linha 2: uma letra no lugar certo e quatro fora. Linha 3: uma no lugar certo, uma em outra posição e três fora. Linha 4: todas as 5 letras no lugar certo. A palavra não aparece.">
+            <p aria-hidden="true">Palavra do Dia 20/10 4/6</p>
+            <div class="gl" aria-hidden="true">⬛⬛🟨🟨⬛</div>
+            <div class="gl" aria-hidden="true">🟩⬛⬛⬛⬛</div>
+            <div class="gl" aria-hidden="true">🟩🟨⬛⬛⬛</div>
+            <div class="gl" aria-hidden="true">🟩🟩🟩🟩🟩</div>
+          </div>
+
+          <!-- Região viva: "Copiado! ✅" será anunciada -->
+          <p class="confirmacao" id="msgCopiado" aria-live="polite"></p>
+
+          <button type="button" class="botao principal" id="btnCompartilhar">📋 Compartilhar resultado</button>
+          <button type="button" class="botao" id="btnVerStats">📊 Ver estatísticas</button>
+          <button type="button" class="botao" id="btnFecharModal" style="border-color:var(--borda);color:var(--texto-suave);">✕ Fechar</button>
+        </div>
+      </div>
+
+      <p style="text-align:center;">
+        <button type="button" class="botao" id="btnReabrirModal" hidden style="max-width:280px;margin:0 auto;">🔁 Reabrir modal de vitória</button>
+      </p>
+    </section>
+
+    <!-- ============================ TELA ESTATÍSTICAS ============================ -->
+    <section id="tela-stats" role="tabpanel" aria-labelledby="aba-stats" tabindex="0" hidden>
+      <h2>Estatísticas</h2>
+      <p class="apoio">Seus números no Desafio do Dia.</p>
+
+      <div class="cartoes">
+        <div class="cartao-num"><div class="valor">12</div><div class="rotulo">Jogos</div></div>
+        <div class="cartao-num"><div class="valor">9</div><div class="rotulo">Vitórias</div></div>
+        <div class="cartao-num"><div class="valor">75%</div><div class="rotulo">Taxa de vitória</div></div>
+        <div class="cartao-num"><div class="valor">4</div><div class="rotulo">Sequência atual</div></div>
+        <div class="cartao-num"><div class="valor">7</div><div class="rotulo">Sequência máxima</div></div>
+        <div class="cartao-num"><div class="valor">3,9</div><div class="rotulo">Média de tentativas</div></div>
+      </div>
+
+      <div class="histograma">
+        <h3>Vitórias por tentativa</h3>
+        <!-- Histograma acessível: descrição para leitores de tela... -->
+        <div class="barras" role="img"
+             aria-label="Histograma de vitórias por número de tentativas: 1 tentativa, 0 jogos; 2 tentativas, 1 jogo; 3 tentativas, 3 jogos; 4 tentativas, 2 jogos; 5 tentativas, 2 jogos; 6 tentativas, 1 jogo.">
+          <div class="barra" aria-hidden="true"><span class="qtd">0</span><div class="coluna" style="height:2%"></div></div>
+          <div class="barra" aria-hidden="true"><span class="qtd">1</span><div class="coluna" style="height:33%"></div></div>
+          <div class="barra" aria-hidden="true"><span class="qtd">3</span><div class="coluna" style="height:100%"></div></div>
+          <div class="barra atual" aria-hidden="true"><span class="qtd">2</span><div class="coluna" style="height:66%"></div></div>
+          <div class="barra" aria-hidden="true"><span class="qtd">2</span><div class="coluna" style="height:66%"></div></div>
+          <div class="barra" aria-hidden="true"><span class="qtd">1</span><div class="coluna" style="height:33%"></div></div>
+        </div>
+        <div class="eixo" aria-hidden="true">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+        </div>
+
+        <!-- ...e tabela equivalente para tecnologias assistivas -->
+        <table class="sr-only">
+          <caption>Vitórias por número de tentativas</caption>
+          <thead><tr><th scope="col">Tentativas</th><th scope="col">Vitórias</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">1</th><td>0</td></tr>
+            <tr><th scope="row">2</th><td>1</td></tr>
+            <tr><th scope="row">3</th><td>3</td></tr>
+            <tr><th scope="row">4</th><td>2</td></tr>
+            <tr><th scope="row">5</th><td>2</td></tr>
+            <tr><th scope="row">6</th><td>1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Protótipo acadêmico · Palavra do Dia · Fuso fixo: America/São_Paulo
+  </footer>
+</div>
+
+<!-- ============================ PAINEL DE NOTAS ============================ -->
+<aside class="notas" id="painelNotas" role="dialog" aria-labelledby="tituloNotas" hidden>
+  <button type="button" class="fechar" id="btnFecharNotas" aria-label="Fechar notas de acessibilidade">✕</button>
+  <h2 id="tituloNotas">📝 Notas de acessibilidade</h2>
+
+  <h3>Nesta tela (geral)</h3>
+  <ul>
+    <li><strong>Contraste AAA:</strong> texto principal 17:1 sobre branco e secundário 10,5:1 (piso WCAG AA é 4,5:1).</li>
+    <li><strong>Foco visível:</strong> anel de 3px + folga de 2px + halo, com contraste ≥ 3:1 em qualquer fundo (WCAG 2.4.7 e 1.4.11).</li>
+    <li><strong>Alvos de toque:</strong> botões com 48–60px de altura e teclas do teclado virtual com 52px (mínimo WCAG: 44px).</li>
+    <li><strong>Escala de texto:</strong> todos os tamanhos em <code>rem</code> — o layout aguenta zoom de 200% sem cortar conteúdo (WCAG 1.4.4).</li>
+    <li><strong>HTML semântico:</strong> <code>header</code>, <code>nav</code>, <code>main</code>, <code>section</code>, <code>footer</code> + link "Pular para o conteúdo".</li>
+    <li><strong>Navegação por teclado:</strong> Tab percorre a página, setas ⇦⇨ trocam de aba, Enter/ESPAÇO ativam qualquer controle.</li>
+    <li><strong>Movimento reduzido:</strong> respeitado por <code>prefers-reduced-motion</code> e pelo botão "Reduzir animações" (WCAG 2.3.3).</li>
+  </ul>
+
+  <h3>Tela Inicial</h3>
+  <ul>
+    <li>Mensagem principal curta e em linguagem simples; botão principal de 60px com foco visível demonstrado.</li>
+    <li>Sequência (streak) com texto por extenso — nada transmitido apenas por emoji.</li>
+  </ul>
+
+  <h3>Tela Partida</h3>
+  <ul>
+    <li><strong>Cor + símbolo:</strong> cada célula combina fundo colorido e símbolo (▲ lugar certo · ● outra posição · ✕ fora), cumplindo o RNF-04 para daltônicos (WCAG 1.4.1).</li>
+    <li><strong>Células anunciadas:</strong> <code>aria-label</code> no formato "linha 2, coluna 3, letra O, verde, no lugar certo".</li>
+    <li><strong>Erros anunciados:</strong> região viva <code>role="alert"</code> com "Palavra precisa ter 5 letras. Sua tentativa não foi contada."</li>
+    <li>Teclado virtual com estado consolidado das letras descrito por extenso no <code>aria-label</code> de cada tecla.</li>
+    <li>Progresso "Tentativa 4 de 6" em texto + barra com descrição para leitores de tela.</li>
+  </ul>
+
+  <h3>Tela Vitória</h3>
+  <ul>
+    <li>Modal com <code>role="dialog"</code> + <code>aria-modal</code>, título e descrição ligados por <code>aria-labelledby/describedby</code>; botão Fechar sempre alcançável.</li>
+    <li>Grade de emojis com descrição completa (<code>role="img"</code>) — compartilha sem spoiler e sem depender da visão de cores.</li>
+    <li>"Copiado! ✅" confirmado em região <code>aria-live="polite"</code>, anunciada por leitores de tela.</li>
+  </ul>
+
+  <h3>Tela Estatísticas</h3>
+  <ul>
+    <li>Histograma com <code>role="img"</code> + <code>aria-label</code> descrevendo todos os valores, mais tabela oculta equivalente para tecnologias assistivas.</li>
+    <li>Números grandes (1,5rem) e rótulos em texto, nunca apenas cor ou gráfico.</li>
+  </ul>
+</aside>
+
+<!-- Região viva global para anúncios de estado (troca de tela, avisos) -->
+<div id="anuncios" class="sr-only" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var anuncios = document.getElementById("anuncios");
+  function anunciar(texto){
+    anuncios.textContent = "";
+    window.setTimeout(function(){ anuncios.textContent = texto; }, 60);
+  }
+
+  /* ---------------- Abas (padrão ARIA: setas, Home, End) ---------------- */
+  var abas = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  var paineis = {
+    "aba-inicial": document.getElementById("tela-inicial"),
+    "aba-partida": document.getElementById("tela-partida"),
+    "aba-vitoria": document.getElementById("tela-vitoria"),
+    "aba-stats":   document.getElementById("tela-stats")
+  };
+  var nomes = {
+    "aba-inicial": "Tela Inicial",
+    "aba-partida": "Tela Partida",
+    "aba-vitoria": "Tela de Vitória",
+    "aba-stats":   "Tela de Estatísticas"
+  };
+
+  function ativarAba(aba, moverFoco){
+    abas.forEach(function(a){
+      var sel = (a === aba);
+      a.setAttribute("aria-selected", sel ? "true" : "false");
+      a.tabIndex = sel ? 0 : -1;
+      paineis[a.id].hidden = !sel;
+    });
+    if (moverFoco){ aba.focus(); }
+    anunciar(nomes[aba.id]);
+  }
+
+  abas.forEach(function(aba){
+    aba.addEventListener("click", function(){ ativarAba(aba, false); });
+    aba.addEventListener("keydown", function(ev){
+      var i = abas.indexOf(aba), alvo = null;
+      if (ev.key === "ArrowRight"){ alvo = abas[(i + 1) % abas.length]; }
+      else if (ev.key === "ArrowLeft"){ alvo = abas[(i - 1 + abas.length) % abas.length]; }
+      else if (ev.key === "Home"){ alvo = abas[0]; }
+      else if (ev.key === "End"){ alvo = abas[abas.length - 1]; }
+      if (alvo){ ev.preventDefault(); ativarAba(alvo, true); }
+    });
+  });
+
+  function irParaAba(id){
+    var aba = document.getElementById(id);
+    if (aba){ ativarAba(aba, false); aba.focus(); }
+  }
+
+  /* ---------------- Modo daltônico / alto contraste ---------------- */
+  var btnModoCor = document.getElementById("btnModoCor");
+  btnModoCor.addEventListener("click", function(){
+    var ligado = document.body.classList.toggle("modo-daltonico");
+    btnModoCor.setAttribute("aria-pressed", ligado ? "true" : "false");
+    btnModoCor.textContent = ligado ? "🟦 Modo daltônico: ligado" : "🟦 Modo daltônico: desligado";
+
+    document.getElementById("legVerde").textContent   = ligado ? "▲" : "■";
+    document.getElementById("legAmarelo").textContent = ligado ? "●" : "■";
+    document.getElementById("legCinza").textContent   = ligado ? "✕" : "■";
+    anunciar(ligado
+      ? "Modo daltônico ligado. Cores trocadas por azul, laranja e cinza, com símbolos ▲, ● e ✕ nas células."
+      : "Modo daltônico desligado. Cores padrão, sem símbolos nas células.");
+  });
+
+  /* ---------------- Reduzir animações ---------------- */
+  var btnReduzir = document.getElementById("btnReduzir");
+  btnReduzir.addEventListener("click", function(){
+    var ligado = document.body.classList.toggle("sem-movimento");
+    btnReduzir.setAttribute("aria-pressed", ligado ? "true" : "false");
+    btnReduzir.textContent = ligado ? "🎬 Reduzir animações: ligado" : "🎬 Reduzir animações: desligado";
+    anunciar(ligado ? "Animações reduzidas." : "Animações restauradas.");
+  });
+
+  /* ---------------- Painel de notas ---------------- */
+  var btnNotas = document.getElementById("btnNotas");
+  var painelNotas = document.getElementById("painelNotas");
+  var btnFecharNotas = document.getElementById("btnFecharNotas");
+
+  function abrirNotas(){
+    painelNotas.hidden = false;
+    btnNotas.setAttribute("aria-pressed", "true");
+    btnFecharNotas.focus();
+  }
+  function fecharNotas(){
+    painelNotas.hidden = true;
+    btnNotas.setAttribute("aria-pressed", "false");
+    btnNotas.focus();
+  }
+  btnNotas.addEventListener("click", function(){
+    painelNotas.hidden ? abrirNotas() : fecharNotas();
+  });
+  btnFecharNotas.addEventListener("click", fecharNotas);
+  document.addEventListener("keydown", function(ev){
+    if (ev.key === "Escape" && !painelNotas.hidden){ fecharNotas(); }
+  });
+
+  /* ---------------- Compartilhar ---------------- */
+  var msgCopiado = document.getElementById("msgCopiado");
+  document.getElementById("btnCompartilhar").addEventListener("click", function(){
+    var texto = "Palavra do Dia 20/10 4/6\n\n⬛⬛🟨🟨⬛\n🟩⬛⬛⬛⬛\n🟩🟨⬛⬛⬛\n🟩🟩🟩🟩🟩";
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(texto).catch(function(){});
+    }
+    msgCopiado.textContent = "Copiado! ✅ Resultado na área de transferência, sem spoiler.";
+  });
+
+  /* ---------------- Modal de vitória ---------------- */
+  var modal = document.getElementById("modalVitoria");
+  var btnFecharModal = document.getElementById("btnFecharModal");
+  var btnReabrirModal = document.getElementById("btnReabrirModal");
+  var fundoModal = modal.parentElement;
+
+  btnFecharModal.addEventListener("click", function(){
+    fundoModal.hidden = true;
+    btnReabrirModal.hidden = false;
+    btnReabrirModal.focus();
+    anunciar("Modal de vitória fechado.");
+  });
+  btnReabrirModal.addEventListener("click", function(){
+    fundoModal.hidden = false;
+    btnReabrirModal.hidden = true;
+    var h = modal.querySelector("h2");
+    h.setAttribute("tabindex", "-1");
+    h.focus();
+    anunciar("Modal de vitória aberto: você acertou em 4 tentativas.");
+  });
+  modal.addEventListener("keydown", function(ev){
+    if (ev.key === "Escape"){ btnFecharModal.click(); }
+  });
+
+  /* ---------------- Botões diversos da tela inicial ---------------- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-aviso]"), function(b){
+    b.addEventListener("click", function(){ anunciar(b.getAttribute("data-aviso")); });
+  });
+  document.getElementById("btnAjuda").addEventListener("click", function(){
+    anunciar("Como jogar: adivinhe a palavra de 5 letras em 6 tentativas. Verde é no lugar certo, amarelo está em outra posição, cinza não está na palavra.");
+  });
+  document.getElementById("btnDesafio").addEventListener("click", function(){ irParaAba("aba-partida"); });
+  document.getElementById("btnIrStats").addEventListener("click", function(){ irParaAba("aba-stats"); });
+  document.getElementById("btnVerStats").addEventListener("click", function(){ irParaAba("aba-stats"); });
+})();
+</script>
+</body>
+</html>

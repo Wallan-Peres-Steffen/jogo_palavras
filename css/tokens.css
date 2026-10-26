@@ -1,0 +1,64 @@
+/* ==========================================================================
+   tokens.css — identidade "Amanhecer"
+   Cores, tipografia, espaçamento, raios e sombras.
+   ========================================================================== */
+
+:root {
+  /* Cores base */
+  --noite: #12142a;
+  --tinta: #1c1f3d;
+  --tinta-alta: #2a3060;
+  --borda: #333a66;
+  --borda-casa: #343a6b;
+
+  --creme: #f5efe3;
+  --creme-dim: #b9b4c9;
+
+  /* Acentos */
+  --mel: #f2b544;
+  --mel-alta: #f6c262;
+  --coral: #e4674c;
+  --coral-esc: #d9573d;
+
+  /* Feedback */
+  --verde: #2f7d50;
+  --amarelo: #e9b949;
+  --cinza: #33365a;
+
+  /* Espaçamento (base 4) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+
+  /* Raios */
+  --r-s: 8px;
+  --r-m: 14px;
+  --r-l: 22px;
+  --r-xl: 28px;
+
+  /* Sombras */
+  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --sh-2: 0 12px 30px rgba(4, 6, 18, 0.42);
+  --sh-mel: 0 10px 24px rgba(242, 181, 68, 0.26);
+
+  /* Tipografia */
+  --font-display: Georgia, 'Times New Roman', serif;
+  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', Consolas, 'Liberation Mono', monospace;
+
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   Modo daltônico: azul (certo) / laranja (presente) / cinza-escuro (ausente).
+   Aceita os dois nomes de atributo para compatibilidade com o documento.
+   -------------------------------------------------------------------------- */
+[data-theme='daltonico'],
+[data-theme='colorblind'] {
+  --verde: #1f5fa8;
+  --amarelo: #e08a00;
+  --cinza: #4a4e69;
+}

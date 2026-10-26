@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de Agentes — Palavra do Dia</title>
+<style>
+  :root{
+    --bg:#0e1020; --surface:#171a30; --surface2:#1f2340; --line:#2c3155;
+    --text:#eef0fa; --muted:#a4abd4; --accent:#f2b544; --accent2:#6aaa64;
+    --ux:#7aa2ff; --a11y:#4ecdc4; --vis:#f2b544;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:80px}
+  header{padding:48px 24px 32px;text-align:center;background:
+    radial-gradient(900px 300px at 50% -60px, rgba(242,181,68,.18), transparent 70%)}
+  header h1{font-size:2.1rem;letter-spacing:-.5px}
+  header h1 span{color:var(--accent)}
+  header p{color:var(--muted);max-width:760px;margin:12px auto 0}
+  .badge{display:inline-block;margin-top:16px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.85rem}
+  section{max-width:1320px;margin:44px auto 0;padding:0 24px}
+  h2{font-size:1.25rem;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  h2 .dot{width:10px;height:10px;border-radius:50%}
+  .sub{color:var(--muted);font-size:.92rem;margin-bottom:20px}
+  /* agents intro */
+  .agents{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  .agent{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .agent .role{font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted)}
+  .agent h3{margin:4px 0 10px;font-size:1.05rem}
+  .agent p{font-size:.9rem;color:var(--muted)}
+  .agent.ux{border-top:3px solid var(--ux)} .agent.ux h3{color:var(--ux)}
+  .agent.a11y{border-top:3px solid var(--a11y)} .agent.a11y h3{color:var(--a11y)}
+  .agent.vis{border-top:3px solid var(--vis)} .agent.vis h3{color:var(--vis)}
+  /* prototypes */
+  .protos{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:28px;align-items:start}
+  .proto{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+  .proto-head{padding:18px 20px 14px;border-bottom:1px solid var(--line)}
+  .proto-head .tag{font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px}
+  .proto-head h3{font-size:1.15rem;margin:2px 0 8px}
+  .proto-head .desc{font-size:.87rem;color:var(--muted)}
+  .phone-wrap{display:flex;justify-content:center;padding:26px 16px;background:
+    repeating-linear-gradient(45deg,transparent,transparent 14px,rgba(255,255,255,.015) 14px,rgba(255,255,255,.015) 28px)}
+  .phone{width:390px;max-width:100%;border:10px solid #05060f;border-radius:34px;overflow:hidden;position:relative;background:#05060f}
+  .phone .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:110px;height:22px;background:#05060f;border-radius:999px;z-index:5}
+  .phone iframe{display:block;width:100%;height:790px;border:0;background:#fff}
+  .proto-foot{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+  .proto-foot a{color:var(--accent);text-decoration:none;font-weight:600}
+  .proto-foot a:hover{text-decoration:underline}
+  .reload{background:var(--surface2);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:5px 10px;cursor:pointer;font-size:.8rem}
+  .reload:hover{color:var(--text)}
+  /* details */
+  .details{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+  .detail{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .detail h4{font-size:1rem;margin-bottom:12px}
+  .detail ul{list-style:none}
+  .detail li{font-size:.87rem;color:var(--muted);padding:7px 0 7px 22px;position:relative;border-top:1px dashed var(--line)}
+  .detail li:first-child{border-top:0}
+  .detail li::before{content:"▸";position:absolute;left:2px;color:var(--accent)}
+  .screens{margin-top:14px;font-size:.85rem;color:var(--muted);background:var(--surface2);border-radius:10px;padding:12px}
+  .screens b{color:var(--text)}
+  /* swatches */
+  .swatches{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .sw{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted);background:var(--surface2);padding:4px 8px;border-radius:8px}
+  .sw i{width:14px;height:14px;border-radius:4px;display:inline-block;border:1px solid rgba(255,255,255,.15)}
+  /* comparison table */
+  table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:16px;overflow:hidden;font-size:.88rem}
+  th,td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--surface2);font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  td{color:var(--muted)} td:first-child{color:var(--text);font-weight:600}
+  footer{max-width:1320px;margin:48px auto 0;padding:24px;border:1px dashed var(--line);border-radius:16px;color:var(--muted);font-size:.9rem}
+  footer b{color:var(--text)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Painel de Agentes Especialistas<br><span>Palavra do Dia</span> — 3 protótipos de interface</h1>
+  <p>Três agentes independentes receberam o mesmo briefing, derivado do <b>PRD.md</b>, e trabalharam em paralelo
+     para produzir três direções de interface distintas para o mesmo produto. Cada protótipo é um HTML
+     autocontido, navegável e exibido abaixo em moldura de celular (390&nbsp;px).</p>
+  <div class="badge">Coordenação: mesmo PRD · escopo idêntico · direções independentes</div>
+</header>
+
+<section>
+  <h2><span class="dot" style="background:#888"></span>Composição do painel</h2>
+  <p class="sub">Cada agente atuou em sua especialidade, sem interferir nos demais.</p>
+  <div class="agents">
+    <div class="agent ux">
+      <div class="role">Agente 1 — UX Design</div>
+      <h3>👤 “Polegar Primeiro”</h3>
+      <p>Arquitetura da informação, hierarquia, zona de polegar, onboarding em contexto e redução de carga cognitiva. Inclui 16 anotações de UX ligáveis dentro do mockup.</p>
+    </div>
+    <div class="agent a11y">
+      <div class="role">Agente 2 — Acessibilidade Web</div>
+      <h3>♿ “Acessível por Padrão”</h3>
+      <p>WCAG 2.1 AAA como piso, modo daltônico com símbolos ▲●✕, ARIA completo, alvos de toque 44px+, navegação por teclado e movimento reduzido. 19 notas de requisitos atendidos.</p>
+    </div>
+    <div class="agent vis">
+      <div class="role">Agente 3 — Design Visual</div>
+      <h3>🌅 “Amanhecer”</h3>
+      <p>Identidade de marca com emblema SVG, paleta autoral, tipografia com personalidade, 6 animações CSS e painel “Paleta &amp; Estilo” interativo.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--accent)"></span>Protótipos</h2>
+  <p class="sub">Clique nas abas internas de cada mockup para percorrer as telas: Inicial → Partida → Vitória → Estatísticas.</p>
+  <div class="protos">
+
+    <div class="proto">
+      <div class="proto-head">
+        <div class="tag" style="color:var(--ux)">Agente UX Design</div>
+        <h3>“Polegar Primeiro”</h3>
+        <div class="desc">O jogador entende o produto em 3 segundos, joga com o polegar e volta amanhã por recompensa, nunca por cobrança.</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone"><div class="notch"></div>
+          <iframe id="f-ux" src="prototipo-ux.html" title="Protótipo UX — Polegar Primeiro" loading="lazy"></iframe>
+        </div>
+      </div>
+      <div class="proto-foot">
+        <a href="prototipo-ux.html" target="_blank">Abrir em aba cheia ↗</a>
+        <button class="reload" onclick="document.getElementById('f-ux').src='prototipo-ux.html'">↻ Recarregar</button>
+      </div>
+    </div>
+
+    <div class="proto">
+      <div class="proto-head">
+        <div class="tag" style="color:var(--a11y)">Agente Acessibilidade</div>
+        <h3>“Acessível por Padrão”</h3>
+        <div class="desc">Acessibilidade como base do design, não como ajuste final: contraste AAA, símbolos além das cores e semântica completa.</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone"><div class="notch"></div>
+          <iframe id="f-a11y" src="prototipo-acessibilidade.html" title="Protótipo Acessibilidade — Acessível por Padrão" loading="lazy"></iframe>
+        </div>
+      </div>
+      <div class="proto-foot">
+        <a href="prototipo-acessibilidade.html" target="_blank">Abrir em aba cheia ↗</a>
+        <button class="reload" onclick="document.getElementById('f-a11y').src='prototipo-acessibilidade.html'">↻ Recarregar</button>
+      </div>
+    </div>
+
+    <div class="proto">
+      <div class="proto-head">
+        <div class="tag" style="color:var(--vis)">Agente Design Visual</div>
+        <h3>“Amanhecer”</h3>
+        <div class="desc">O tabuleiro como nascer do dia: cada desafio diário é uma aurora única; o verde da certeza é a luz que chega.</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone"><div class="notch"></div>
+          <iframe id="f-vis" src="prototipo-visual.html" title="Protótipo Visual — Amanhecer" loading="lazy"></iframe>
+        </div>
+      </div>
+      <div class="proto-foot">
+        <a href="prototipo-visual.html" target="_blank">Abrir em aba cheia ↗</a>
+        <button class="reload" onclick="document.getElementById('f-vis').src='prototipo-visual.html'">↻ Recarregar</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--ux)"></span>Relatórios dos agentes</h2>
+  <p class="sub">Decisões de cada especialista, conforme entregues ao coordenador.</p>
+  <div class="details">
+
+    <div class="detail">
+      <h4 style="color:var(--ux)">👤 Polegar Primeiro — decisões de UX</h4>
+      <ul>
+        <li><b>Hierarquia de uma escolha:</b> o Desafio do Dia é o único herói da tela inicial; prática/estatísticas/ajuda ficam secundários (evita paralisia).</li>
+        <li><b>Zona de polegar:</b> CTA primário de 56&nbsp;px no terço inferior; teclado fixo no rodapé com alvos de 48&nbsp;px — nenhuma ação crítica no topo.</li>
+        <li><b>Onboarding em contexto (RF-12):</b> tooltip de uma linha após o 1º chute explica as cores — zero tutorial longo (evita até 48% de abandono).</li>
+        <li><b>Carga cognitiva zero:</b> contador “Tentativa 4 de 6” com pips, cursor piscante na linha atual e teclado que consolida o estado das letras.</li>
+        <li><b>Falha não-punitiva:</b> chute inválido só avisa e nunca consome tentativa; a regra do streak (só quebra na derrota) é dita nas estatísticas.</li>
+        <li><b>Compartilhar como ação-estrela:</b> um único botão primário, grade sem spoiler e “Copiado! ✅” com fallback via textarea para iOS/iframes.</li>
+        <li><b>Transparência de dados:</b> “sem cadastro, tudo no seu aparelho” dito em uma linha — remove a objeção nº 1 do público casual.</li>
+      </ul>
+      <div class="screens"><b>Telas:</b> Inicial (card-herói do Desafio nº 287, selo 🔥12) · Partida (3 linhas com feedback, incl. letras repetidas + tooltip RF-12) · Vitória (confete, PRATO revelado, compartilhar) · Estatísticas (6 cartões, histograma 1–6, últimos 7 dias).</div>
+    </div>
+
+    <div class="detail">
+      <h4 style="color:var(--a11y)">♿ Acessível por Padrão — decisões de acessibilidade</h4>
+      <ul>
+        <li><b>Modo daltônico ligado por padrão:</b> paleta azul/laranja/cinza + símbolos ▲●✕ nas células — nada depende só de cor (WCAG 1.4.1); alternador com <code>aria-pressed</code>.</li>
+        <li><b>Contraste AAA como piso:</b> texto 17:1; células 7,1–8,7:1; erro 8,9:1.</li>
+        <li><b>Células com aria-label no formato do RNF-04:</b> “linha 2, coluna 2, letra O, verde, no lugar certo”.</li>
+        <li><b>Regiões aria-live em dois níveis:</b> <code>role="alert"</code> para erro de validação e <code>polite</code> para “Copiado! ✅” e trocas de tela.</li>
+        <li><b>Alvos de toque ≥ 44&nbsp;px:</b> botões 48–60&nbsp;px, células ~59&nbsp;px, teclas com 52&nbsp;px de altura.</li>
+        <li><b>Movimento reduzido em dobro:</b> <code>prefers-reduced-motion</code> + botão manual “Reduzir animações”.</li>
+        <li><b>Semântica e teclado completos:</b> skip link, tablist com setas, modal com gestão de foco e Escape, texto todo em <code>rem</code> (zoom 200% sem corte).</li>
+      </ul>
+      <div class="screens"><b>Telas:</b> Inicial (foco visível demonstrado) · Partida (cores + símbolos, erro anunciável) · Vitória (modal com foco preso, grade descrita por extenso) · Estatísticas (histograma com <code>role="img"</code> + tabela oculta). <b>19 notas</b> de requisitos no painel interno.</div>
+    </div>
+
+    <div class="detail">
+      <h4 style="color:var(--vis)">🌅 Amanhecer — decisões de design visual</h4>
+      <ul>
+        <li><b>Marca com emblema SVG inline:</b> selo com sol nascente (gradiente mel→coral) sobre 5 casas de tabuleiro — o produto se explica em um glifo.</li>
+        <li><b>Ritual matinal:</b> chip de data por extenso e cartão do desafio com “raio de luz” radial — escassez como desejo.</li>
+        <li><b>Contraste calculado:</b> verde-certo a 5,0:1 com branco; amarelo com texto tinta a 9,5:1 — AA em todos os textos.</li>
+        <li><b>Acessibilidade na estética:</b> símbolos ●/▲ nas casas, aria-labels e 6 animações desligáveis por reduced-motion.</li>
+        <li><b>Acabamento em escala:</b> raios 8/14/22/28&nbsp;px, espaçamento 4/8/16/24, 3 níveis de sombra, textura de pontos sutil.</li>
+        <li><b>Tipografia em 5 níveis:</b> Georgia display, system-ui 800 nos títulos, corpo 15&nbsp;px, legendas tracked e monoespaçada 26&nbsp;px nas letras do tabuleiro.</li>
+        <li><b>Teclado coerente:</b> estados das teclas batem exatamente com as tentativas do tabuleiro.</li>
+      </ul>
+      <div class="swatches">
+        <span class="sw"><i style="background:#12142A"></i>Noite #12142A</span>
+        <span class="sw"><i style="background:#1C1F3D"></i>Tinta #1C1F3D</span>
+        <span class="sw"><i style="background:#F5EFE3"></i>Creme #F5EFE3</span>
+        <span class="sw"><i style="background:#F2B544"></i>Mel #F2B544</span>
+        <span class="sw"><i style="background:#E4674C"></i>Coral #E4674C</span>
+        <span class="sw"><i style="background:#2F7D50"></i>Verde-certo #2F7D50</span>
+      </div>
+      <div class="screens"><b>Telas:</b> Inicial (wordmark + sol nascente animado, streak pulsante) · Partida (flip 3D escalonado) · Vitória (modal sobre tabuleiro desfocado, confete de 34 farpas) · Estatísticas (barras em cascata com faixa dourada).</div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--a11y)"></span>Comparativo</h2>
+  <p class="sub">As três direções são complementares — o MVP pode absorver o melhor de cada uma.</p>
+  <table>
+    <thead>
+      <tr><th>Critério</th><th>Polegar Primeiro (UX)</th><th>Acessível por Padrão (A11y)</th><th>Amanhecer (Visual)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Foco principal</td><td>Fluxo, clareza e conversão para o hábito</td><td>Inclusão e conformidade WCAG 2.1</td><td>Identidade, emoção e acabamento</td></tr>
+      <tr><td>Diferencial no mockup</td><td>16 notas de UX sobrepostas + fluxo real entre telas</td><td>Modo daltônico funcional + contraste AAA + 19 notas</td><td>Paleta autoral + 6 animações + painel de estilo</td></tr>
+      <tr><td>Ponto forte</td><td>Validar usabilidade com usuários</td><td>Garantir que ninguém fique de fora</td><td>Definir a marca do produto</td></tr>
+      <tr><td>Risco se adotado sozinho</td><td>Visual pode parecer genérico</td><td>Pode parecer “clínico” sem personalização</td><td>Beleza sem comprometer legibilidade exige cuidado</td></tr>
+      <tr><td>Recomendação de uso</td><td colspan="3">Combinar: estrutura de fluxo do agente UX + requisitos de acessibilidade do agente A11y + identidade e animações do agente Visual.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <b>Próximo passo (fase de implementação do PRD):</b> fundir as melhores práticas dos três protótipos no
+  MVP real — estrutura de telas e onboarding de “Polegar Primeiro”, camada de acessibilidade de
+  “Acessível por Padrão” (modo daltônico, ARIA, foco, reduced-motion) e identidade visual de “Amanhecer”
+  (tema, animações, escala de espaçamento) — seguindo a arquitetura técnica da §10 do PRD.
+</footer>
+
+</body>
+</html>

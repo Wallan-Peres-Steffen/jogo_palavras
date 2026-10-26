@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palavra do Dia — Protótipo Visual (Amanhecer)</title>
+<style>
+/* ============================================================
+   PALETA AUTORA "AMANHECER"
+   Noite #12142A · Tinta #1C1F3D · Creme #F5EFE3
+   Mel #F2B544 · Coral #E4674C · Verde-certo #2F7D50
+   ============================================================ */
+:root{
+  --noite:#12142A;
+  --tinta:#1C1F3D;
+  --tinta-2:#252A4E;
+  --borda:#333A66;
+  --creme:#F5EFE3;
+  --creme-dim:#B9B4C9;
+  --mel:#F2B544;
+  --coral:#E4674C;
+  --verde:#2F7D50;
+  --amarelo:#E9B949;
+  --cinza:#33365A;
+
+  --r-s:8px; --r-m:14px; --r-l:22px; --r-xl:28px;
+  --sh-1:0 2px 6px rgba(6,8,20,.35);
+  --sh-2:0 8px 24px rgba(6,8,20,.45);
+  --sh-mel:0 6px 20px rgba(242,181,68,.28);
+
+  --font-ui:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-display:Georgia,"Times New Roman",serif;
+  --font-mono:ui-monospace,"Cascadia Mono","Courier New",monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-ui);
+  background:
+    radial-gradient(1100px 480px at 50% -8%, #2A2352 0%, transparent 60%),
+    radial-gradient(700px 420px at 110% 105%, #3A2438 0%, transparent 55%),
+    var(--noite);
+  color:var(--creme);
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:14px 10px 0;
+  line-height:1.45;
+}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--mel);outline-offset:2px;border-radius:6px}
+
+/* ---------- shell do mockup ---------- */
+.app{
+  width:100%;max-width:430px;
+  background:linear-gradient(180deg,#181B36 0%,#14162E 100%);
+  border:1px solid #2B3058;
+  border-radius:var(--r-xl);
+  box-shadow:0 24px 60px rgba(0,0,0,.55);
+  overflow:hidden;
+  position:relative;
+}
+/* textura sutil de pontos */
+.app::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(rgba(245,239,227,.045) 1px, transparent 1px);
+  background-size:22px 22px;
+  mask-image:linear-gradient(180deg,#000 0%,transparent 42%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 42%);
+}
+
+/* ---------- navegação por abas (chrome do protótipo) ---------- */
+.tabbar{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
+  padding:10px 10px 8px;position:relative;z-index:5;
+  border-bottom:1px solid #262B52;
+}
+.tabbar .tab{
+  font-size:11px;font-weight:700;letter-spacing:.04em;
+  padding:8px 2px;border-radius:var(--r-s);
+  color:var(--creme-dim);border:1px solid transparent;
+  transition:background .18s ease,color .18s ease,transform .12s ease;
+}
+.tabbar .tab:hover{background:#232850;color:var(--creme)}
+.tabbar .tab:active{transform:scale(.96)}
+.tabbar .tab[aria-selected="true"]{
+  background:linear-gradient(180deg,#2C3160,#232748);
+  color:var(--mel);border-color:#3B4280;
+  box-shadow:inset 0 1px 0 rgba(245,239,227,.08),var(--sh-1);
+}
+
+/* ---------- telas ---------- */
+.screen{display:none;padding:20px 18px 26px;position:relative;z-index:2}
+.screen.is-active{display:block;animation:tela-entra .35s ease both}
+@keyframes tela-entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- tipografia ---------- */
+.eyebrow{
+  font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mel);
+}
+.h-display{font-family:var(--font-display);font-size:30px;line-height:1.1;font-weight:700}
+.h-1{font-size:19px;font-weight:800;letter-spacing:-.01em}
+.body-s{font-size:13px;color:var(--creme-dim)}
+.caption{font-size:11px;color:var(--creme-dim);letter-spacing:.02em}
+
+/* ============================================================
+   MARCA — wordmark + emblema (SVG inline)
+   ============================================================ */
+.marca{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.marca svg{flex:none;filter:drop-shadow(0 4px 12px rgba(228,103,76,.35))}
+.marca .nome{display:flex;flex-direction:column;line-height:1}
+.marca .nome .l1{
+  font-family:var(--font-display);font-weight:700;font-size:26px;letter-spacing:.01em;
+  background:linear-gradient(92deg,var(--creme) 30%,var(--mel) 85%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.marca .nome .l2{
+  margin-top:5px;font-size:10.5px;font-weight:800;letter-spacing:.34em;
+  color:var(--mel);text-transform:uppercase;
+}
+.sol-nasce{animation:sol-nasce 5s ease-in-out infinite}
+@keyframes sol-nasce{
+  0%,100%{transform:translateY(1.5px)}
+  50%{transform:translateY(-2px)}
+}
+
+/* ---------- cartão principal (Desafio do Dia) ---------- */
+.card{
+  background:linear-gradient(160deg,#262B54 0%,#1D2145 100%);
+  border:1px solid #353B6E;border-radius:var(--r-l);
+  box-shadow:var(--sh-2);padding:18px;
+}
+.card-dia{
+  position:relative;overflow:hidden;margin-top:14px;
+  border:1px solid rgba(242,181,68,.35);
+}
+.card-dia::after{ /* raio de luz do amanhecer */
+  content:"";position:absolute;top:-70px;right:-50px;width:190px;height:190px;border-radius:50%;
+  background:radial-gradient(circle,rgba(242,181,68,.28) 0%,rgba(228,103,76,.10) 45%,transparent 70%);
+  pointer-events:none;
+}
+.card-dia .row-mini{display:flex;gap:6px;margin:12px 0 14px}
+.card-dia .row-mini span{
+  width:34px;height:34px;border-radius:var(--r-s);
+  display:grid;place-items:center;
+  font-family:var(--font-mono);font-weight:700;font-size:16px;
+  background:var(--tinta-2);border:1px solid var(--borda);color:var(--creme-dim);
+}
+.card-dia .row-mini span.on{background:var(--verde);border-color:var(--verde);color:#fff}
+
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  padding:14px 16px;border-radius:var(--r-m);
+  font-size:15px;font-weight:800;letter-spacing:.01em;
+  transition:transform .14s ease,box-shadow .18s ease,background .18s ease,filter .18s ease;
+}
+.btn:active{transform:scale(.97)}
+.btn-mel{
+  background:linear-gradient(180deg,#F7C55E,#E9A72F);color:#2A1E05;
+  box-shadow:var(--sh-mel),inset 0 1px 0 rgba(255,255,255,.5);
+}
+.btn-mel:hover{filter:brightness(1.06);box-shadow:0 8px 26px rgba(242,181,68,.42)}
+.btn-fantasma{
+  background:#232850;border:1px solid #384078;color:var(--creme);
+}
+.btn-fantasma:hover{background:#2A3060}
+.btn-coral{background:linear-gradient(180deg,#EE7A61,#D9573D);color:#fff;box-shadow:0 6px 18px rgba(228,103,76,.3)}
+
+/* grade de botões secundários */
+.grade-acoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.acao{
+  background:#20254A;border:1px solid #333A6C;border-radius:var(--r-m);
+  padding:13px 12px;text-align:left;
+  display:flex;align-items:center;gap:10px;
+  transition:transform .14s ease,background .18s ease,border-color .18s ease;
+}
+.acao:hover{background:#272C58;border-color:#454D8E;transform:translateY(-2px)}
+.acao:active{transform:scale(.97)}
+.acao .ico{font-size:18px;line-height:1}
+.acao b{display:block;font-size:13.5px;font-weight:800}
+.acao i{display:block;font-style:normal;font-size:10.5px;color:var(--creme-dim)}
+
+/* selo de streak com pulso */
+.selo-streak{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(228,103,76,.14);border:1px solid rgba(228,103,76,.5);
+  color:#FFB9A6;border-radius:999px;padding:6px 13px;
+  font-size:13px;font-weight:800;
+  animation:streak-pulso 2.6s ease-in-out infinite;
+}
+@keyframes streak-pulso{
+  0%,100%{box-shadow:0 0 0 0 rgba(228,103,76,.35)}
+  50%{box-shadow:0 0 0 7px rgba(228,103,76,0)}
+}
+.chip-data{
+  display:inline-flex;align-items:center;gap:6px;margin-top:14px;
+  background:#1B1F42;border:1px solid #30366A;border-radius:999px;
+  padding:6px 12px;font-size:11.5px;color:var(--creme-dim);letter-spacing:.02em;
+}
+
+/* ============================================================
+   PARTIDA — tabuleiro
+   ============================================================ */
+.topo-partida{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.progresso{margin:10px 0 14px;display:flex;align-items:center;gap:10px}
+.progresso .trilho{flex:1;height:6px;border-radius:99px;background:#262B54;overflow:hidden}
+.progresso .trilho i{display:block;height:100%;width:50%;border-radius:99px;
+  background:linear-gradient(90deg,var(--coral),var(--mel))}
+.progresso b{font-size:12px;font-weight:800;color:var(--mel);letter-spacing:.04em}
+
+.board{
+  display:grid;grid-template-rows:repeat(6,1fr);gap:7px;
+  width:100%;max-width:330px;margin:0 auto;
+}
+.linha{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.casa{
+  aspect-ratio:1/1;border-radius:var(--r-s);
+  display:grid;place-items:center;position:relative;
+  font-family:var(--font-mono);font-size:clamp(20px,6.4vw,26px);font-weight:700;
+  background:var(--tinta);border:2px solid #343A6B;color:var(--creme);
+  --tile-final:var(--tinta);--borda-final:#343A6B;
+  transition:transform .1s ease;
+}
+.casa.preenchida{border-color:#4A5290;background:var(--tinta-2)}
+.casa.verde{background:var(--verde);border-color:var(--verde);color:#fff;--tile-final:var(--verde);--borda-final:var(--verde)}
+.casa.amarelo{background:var(--amarelo);border-color:var(--amarelo);color:#1C1405;--tile-final:var(--amarelo);--borda-final:var(--amarelo)}
+.casa.cinza{background:var(--cinza);border-color:var(--cinza);color:var(--creme-dim);--tile-final:var(--cinza);--borda-final:var(--cinza)}
+/* suporte a modo daltonismo: símbolo no canto */
+.casa.verde::after,.casa.amarelo::after{
+  position:absolute;right:3px;bottom:1px;font-size:9px;font-weight:800;opacity:.75;
+}
+.casa.verde::after{content:"●"}
+.casa.amarelo::after{content:"▲"}
+
+.casa.caret{animation:caret 1.1s steps(1) infinite}
+@keyframes caret{50%{border-color:var(--mel);box-shadow:0 0 0 3px rgba(242,181,68,.18)}}
+
+/* flip 3D da revelação */
+.casa.virando{animation:flip-casa .6s ease both}
+@keyframes flip-casa{
+  0%{transform:rotateX(0);background:var(--tinta);border-color:#343A6B}
+  49%{transform:rotateX(90deg);background:var(--tinta);border-color:#343A6B}
+  51%{background:var(--tile-final);border-color:var(--borda-final)}
+  100%{transform:rotateX(0);background:var(--tile-final);border-color:var(--borda-final)}
+}
+.board{perspective:600px}
+
+/* shake de erro */
+.board.errou .linha.atual{animation:shake .45s ease}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  15%{transform:translateX(-7px)}30%{transform:translateX(6px)}
+  45%{transform:translateX(-5px)}60%{transform:translateX(4px)}
+  80%{transform:translateX(-2px)}
+}
+.toast-erro{
+  position:absolute;left:50%;top:-6px;transform:translate(-50%,-100%);
+  background:var(--coral);color:#fff;font-size:12.5px;font-weight:800;
+  padding:8px 14px;border-radius:var(--r-s);box-shadow:var(--sh-2);
+  white-space:nowrap;opacity:0;pointer-events:none;
+}
+.toast-erro.ver{animation:toast-sobe 2s ease both}
+@keyframes toast-sobe{0%{opacity:0;transform:translate(-50%,-70%)}12%,80%{opacity:1;transform:translate(-50%,-100%)}100%{opacity:0}}
+
+/* dica de onboarding */
+.dica{
+  margin:14px auto 0;max-width:330px;
+  display:flex;gap:10px;align-items:flex-start;
+  background:rgba(242,181,68,.10);border:1px dashed rgba(242,181,68,.55);
+  border-radius:var(--r-m);padding:10px 12px;
+}
+.dica .ico{font-size:16px}
+.dica p{font-size:12px;color:#F0DFB8}
+.dica b{color:var(--mel)}
+
+/* teclado virtual */
+.teclado{max-width:340px;margin:16px auto 0;display:grid;gap:6px}
+.teclado .tk-linha{display:flex;gap:5px;justify-content:center}
+.tecla{
+  flex:1 1 0;min-width:0;padding:12px 0;border-radius:var(--r-s);
+  background:linear-gradient(180deg,#333A72,#2A3060);
+  font-size:13px;font-weight:800;color:var(--creme);
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.35),var(--sh-1);
+  transition:transform .08s ease,filter .15s ease,background .2s ease,color .2s ease;
+}
+.tecla.wide{flex:1.7 1 0;font-size:10.5px;letter-spacing:.03em}
+.tecla:hover{filter:brightness(1.15)}
+.tecla:active{transform:translateY(2px) scale(.96);box-shadow:inset 0 -1px 0 rgba(0,0,0,.35)}
+.tecla.usada{background:var(--cinza);color:var(--creme-dim);box-shadow:none}
+.tecla.posicao{background:var(--amarelo);color:#1C1405;box-shadow:none}
+.tecla.lugar{background:var(--verde);color:#fff;box-shadow:none}
+
+.barra-botoes{display:flex;gap:8px;max-width:330px;margin:14px auto 0}
+.barra-botoes .btn{font-size:12.5px;padding:10px 8px}
+
+/* ============================================================
+   VITÓRIA — modal + confete
+   ============================================================ */
+#screen-vitoria{padding-top:14px}
+.fundo-jogo{
+  position:absolute;inset:0;overflow:hidden;border-radius:var(--r-xl);
+  opacity:.28;pointer-events:none;filter:blur(1px);
+  display:flex;flex-direction:column;gap:7px;padding:80px 30px 0;
+}
+.fundo-jogo .linha{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.fundo-jogo span{aspect-ratio:1/1;border-radius:6px;background:var(--cinza)}
+.fundo-jogo span:nth-child(3n){background:var(--verde)}
+.fundo-jogo span:nth-child(7n){background:var(--amarelo)}
+
+.confete-area{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3}
+.confete{
+  position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;
+  animation:confete-cai linear both;
+}
+@keyframes confete-cai{
+  0%{transform:translateY(0) rotate(0deg);opacity:1}
+  85%{opacity:1}
+  100%{transform:translateY(460px) rotate(720deg);opacity:0}
+}
+
+.modal-vitoria{
+  position:relative;z-index:4;margin-top:34px;
+  background:linear-gradient(170deg,#282D5A 0%,#1D2145 100%);
+  border:1px solid rgba(242,181,68,.4);
+  border-radius:var(--r-xl);padding:22px 18px 18px;text-align:center;
+  box-shadow:0 30px 70px rgba(0,0,0,.6);
+  animation:modal-sobe .5s cubic-bezier(.2,.9,.3,1.2) both;
+}
+@keyframes modal-sobe{from{opacity:0;transform:translateY(26px) scale(.95)}to{opacity:1;transform:none}}
+.modal-vitoria .glow{
+  position:absolute;top:-46px;left:50%;transform:translateX(-50%);
+  width:150px;height:90px;border-radius:50%;
+  background:radial-gradient(circle,rgba(242,181,68,.4),transparent 70%);pointer-events:none;
+}
+.palavra-revelada{
+  font-family:var(--font-mono);font-size:30px;font-weight:700;letter-spacing:.32em;
+  margin:6px 0 2px;padding-left:.32em;
+}
+.palavra-revelada em{
+  font-style:normal;
+  background:linear-gradient(90deg,var(--creme),var(--mel));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.placar{
+  display:inline-flex;align-items:baseline;gap:6px;margin:10px 0 4px;
+  background:#1B1F42;border:1px solid #343A6B;border-radius:999px;padding:6px 16px;
+}
+.placar b{font-size:20px;color:var(--mel);font-weight:800}
+.placar span{font-size:12px;color:var(--creme-dim)}
+.grade-emoji{
+  display:inline-flex;flex-direction:column;gap:4px;margin:12px 0 14px;
+  background:#161A38;border:1px solid #2E3465;border-radius:var(--r-m);padding:10px 12px;
+  font-size:16px;line-height:1.35;
+}
+.grade-emoji .ge-linha{display:flex;gap:4px}
+.selo-streak.grande{font-size:14px;padding:7px 15px;margin-bottom:14px}
+.modal-vitoria .btn + .btn{margin-top:8px}
+
+/* ============================================================
+   ESTATÍSTICAS
+   ============================================================ */
+.grade-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}
+.stat{
+  background:#20254A;border:1px solid #333A6C;border-radius:var(--r-m);
+  padding:12px 6px;text-align:center;
+  transition:transform .16s ease,border-color .16s ease;
+}
+.stat:hover{transform:translateY(-2px);border-color:#4A5290}
+.stat b{display:block;font-size:23px;font-weight:800;line-height:1.1;color:var(--creme)}
+.stat span{display:block;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--creme-dim);margin-top:3px}
+.stat.destaque b{color:var(--mel)}
+.stat.chama b{color:#FF9E85}
+
+.histograma{
+  margin-top:12px;background:#20254A;border:1px solid #333A6C;
+  border-radius:var(--r-m);padding:16px 14px 12px;
+}
+.histograma h3{font-size:13px;font-weight:800;margin-bottom:2px}
+.barras{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:end;height:120px;margin-top:12px}
+.barra{display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
+.barra i{
+  display:block;width:100%;border-radius:6px 6px 3px 3px;height:0;
+  background:linear-gradient(180deg,#3C4380,#2E3465);
+  transition:height .9s cubic-bezier(.2,.8,.3,1);
+}
+.barra.melhor i{background:linear-gradient(180deg,#F7C55E,#E9A72F);box-shadow:0 0 14px rgba(242,181,68,.35)}
+.barra u{font-size:11px;font-weight:800;color:var(--creme-dim);text-decoration:none}
+.barra.melhor u{color:var(--mel)}
+.barra .rot{font-family:var(--font-mono);font-size:11px;color:#8D8AA8}
+
+.resumo-vd{display:flex;gap:9px;margin-top:12px}
+.pill-vd{
+  flex:1;border-radius:var(--r-m);padding:11px 12px;font-size:12px;font-weight:800;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pill-vd.v{background:rgba(47,125,80,.18);border:1px solid rgba(47,125,80,.6);color:#8FD9AC}
+.pill-vd.d{background:rgba(51,54,90,.5);border:1px solid #454B85;color:var(--creme-dim)}
+
+/* ============================================================
+   RODAPÉ — faixa de swatches da paleta
+   ============================================================ */
+.rodape{
+  width:100%;max-width:430px;margin:14px auto 0;padding:0 2px 18px;
+}
+.swatches{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.swatch{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(28,31,61,.7);border:1px solid #2E3465;
+  border-radius:10px;padding:6px 8px;
+}
+.swatch .bolha{width:20px;height:20px;border-radius:6px;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.swatch b{display:block;font-size:10px;font-weight:800;letter-spacing:.03em}
+.swatch span{display:block;font-family:var(--font-mono);font-size:9.5px;color:var(--creme-dim)}
+.rodape p{margin-top:9px;font-size:10px;color:#77749A;text-align:center;letter-spacing:.04em}
+
+/* ============================================================
+   PAINEL "PALETA & ESTILO"
+   ============================================================ */
+.fab-estilo{
+  position:fixed;right:14px;bottom:14px;z-index:40;
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(180deg,#2C3160,#232748);
+  border:1px solid #454D8E;border-radius:999px;
+  padding:11px 16px;font-size:12.5px;font-weight:800;
+  box-shadow:var(--sh-2);
+  transition:transform .15s ease,box-shadow .18s ease;
+}
+.fab-estilo:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.fab-estilo[aria-expanded="true"]{background:linear-gradient(180deg,var(--mel),#E9A72F);color:#2A1E05;border-color:transparent}
+
+.painel-estilo{
+  position:fixed;left:50%;bottom:0;transform:translate(-50%,110%);
+  width:100%;max-width:440px;z-index:39;
+  background:linear-gradient(180deg,#22264C,#181B36);
+  border:1px solid #3A4080;border-bottom:none;
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  box-shadow:0 -18px 50px rgba(0,0,0,.6);
+  padding:18px 18px 22px;max-height:78vh;overflow-y:auto;
+  transition:transform .4s cubic-bezier(.2,.9,.3,1.05);
+}
+.painel-estilo.aberto{transform:translate(-50%,0)}
+.painel-estilo h2{font-family:var(--font-display);font-size:20px;margin-bottom:2px}
+.painel-estilo h3{
+  font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mel);margin:18px 0 9px;
+}
+.painel-sw{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.escala-demo > div{display:flex;align-items:baseline;gap:10px;padding:7px 0;border-bottom:1px dashed #333A66}
+.escala-demo .exemplo{color:var(--creme)}
+.anim-demo{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;
+  background:#1B1F42;border:1px solid #30366A;border-radius:var(--r-m);padding:9px 11px;margin-bottom:8px}
+.anim-demo p{font-size:12px}
+.anim-demo p b{display:block;font-size:12.5px}
+.anim-demo p span{color:var(--creme-dim);font-size:11px}
+.anim-demo button{
+  background:#2C3160;border:1px solid #454D8E;border-radius:8px;
+  padding:7px 11px;font-size:11px;font-weight:800;
+}
+.anim-demo button:hover{background:#363C74}
+
+/* demos re-executáveis */
+.virando-demo{animation:flip-casa .6s ease both !important}
+.shake-demo{animation:shake .45s ease !important}
+.pulso-demo{animation:streak-pulso 1.4s ease-in-out 2 !important}
+.casa-mini{
+  width:34px;height:34px;border-radius:6px;display:inline-grid;place-items:center;
+  font-family:var(--font-mono);font-weight:700;font-size:15px;
+}
+.mini-verde{background:var(--verde);color:#fff;--tile-final:var(--verde);--borda-final:var(--verde)}
+.mini-amarelo{background:var(--amarelo);color:#1C1405;--tile-final:var(--amarelo);--borda-final:var(--amarelo)}
+.mini-neutra{background:var(--tinta);border:2px solid #343A6B;--tile-final:var(--tinta);--borda-final:#343A6B}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ============================================================
+   ACESSIBILIDADE — movimento reduzido
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s !important;animation-iteration-count:1 !important;transition-duration:.001s !important}
+  .confete{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- navegação do protótipo -->
+  <nav class="tabbar" role="tablist" aria-label="Telas do protótipo">
+    <button class="tab" role="tab" aria-selected="true"  data-tela="inicial">Inicial</button>
+    <button class="tab" role="tab" aria-selected="false" data-tela="partida">Partida</button>
+    <button class="tab" role="tab" aria-selected="false" data-tela="vitoria">Vitória</button>
+    <button class="tab" role="tab" aria-selected="false" data-tela="estatisticas">Estatísticas</button>
+  </nav>
+
+  <!-- ==================== TELA INICIAL ==================== -->
+  <section class="screen is-active" id="screen-inicial" role="tabpanel">
+    <header class="marca">
+      <!-- emblema: sol nascente sobre 5 casas (SVG inline) -->
+      <svg class="sol-nasce" width="54" height="54" viewBox="0 0 54 54" aria-hidden="true">
+        <defs>
+          <linearGradient id="g-sol" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#F7C55E"/><stop offset="1" stop-color="#E4674C"/>
+          </linearGradient>
+        </defs>
+        <rect x="1.5" y="1.5" width="51" height="51" rx="14" fill="#1C1F3D" stroke="#3B4280" stroke-width="1.5"/>
+        <circle cx="27" cy="26" r="10.5" fill="url(#g-sol)"/>
+        <g stroke="#F2B544" stroke-width="2.2" stroke-linecap="round" opacity=".9">
+          <path d="M27 10.5v-3"/><path d="M38.5 15.4l2-2.1"/><path d="M15.5 15.4l-2-2.1"/>
+        </g>
+        <path d="M13 33.5h28" stroke="#F5EFE3" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+        <g>
+          <rect x="12" y="37" width="6" height="6" rx="1.6" fill="#2F7D50"/>
+          <rect x="20" y="37" width="6" height="6" rx="1.6" fill="#E9B949"/>
+          <rect x="28" y="37" width="6" height="6" rx="1.6" fill="#2F7D50"/>
+          <rect x="36" y="37" width="6" height="6" rx="1.6" fill="#33365A"/>
+        </g>
+      </svg>
+      <div class="nome">
+        <span class="l1">Palavra</span>
+        <span class="l2">do Dia</span>
+      </div>
+    </header>
+
+    <span class="chip-data">☀️ terça-feira, 20 de outubro · São Paulo</span>
+
+    <article class="card card-dia">
+      <p class="eyebrow">Desafio de hoje</p>
+      <h1 class="h-display" style="margin-top:4px">A palavra espera por você</h1>
+      <div class="row-mini" aria-hidden="true">
+        <span class="on">A</span><span>M</span><span>A</span><span>D</span><span>O</span>
+      </div>
+      <p class="body-s">Uma palavra, seis tentativas, zero pressa. Volte amanhã para um novo desafio.</p>
+      <div style="margin:14px 0 12px">
+        <span class="selo-streak">🔥 Sequência de 12 dias</span>
+      </div>
+      <button class="btn btn-mel" data-ir="partida">▶&nbsp; Jogar Desafio do Dia</button>
+    </article>
+
+    <div class="grade-acoes">
+      <button class="acao" data-ir="partida"><span class="ico">🎲</span><span><b>Praticar</b><i>Partida livre, infinita</i></span></button>
+      <button class="acao" data-ir="estatisticas"><span class="ico">📊</span><span><b>Estatísticas</b><i>Seu histórico</i></span></button>
+      <button class="acao" data-ir="vitoria"><span class="ico">🏆</span><span><b>Vitória de ontem</b><i>Ver resumo</i></span></button>
+      <button class="acao" data-abrir-estilo><span class="ico">🎨</span><span><b>Paleta &amp; Estilo</b><i>Sistema de design</i></span></button>
+    </div>
+
+    <p class="caption" style="text-align:center;margin-top:16px">❓ Como jogar: adivinhe as 5 letras em até 6 tentativas</p>
+  </section>
+
+  <!-- ==================== TELA PARTIDA ==================== -->
+  <section class="screen" id="screen-partida" role="tabpanel">
+    <div class="topo-partida">
+      <p class="eyebrow">🎲 Modo prática</p>
+      <span class="caption">Palavra 5 letras</span>
+    </div>
+
+    <div class="progresso">
+      <b>Tentativa 4 de 6</b>
+      <span class="trilho"><i></i></span>
+    </div>
+
+    <div style="position:relative">
+      <span class="toast-erro" id="toast-erro">Palavra não está na lista 🚫</span>
+      <div class="board" id="board" role="grid" aria-label="Tabuleiro, tentativa 4 de 6">
+        <!-- linha 1 -->
+        <div class="linha" role="row">
+          <span class="casa cinza" role="gridcell" aria-label="linha 1, coluna 1, ausente, letra F">F</span>
+          <span class="casa cinza" role="gridcell" aria-label="linha 1, coluna 2, ausente, letra A">A</span>
+          <span class="casa cinza" role="gridcell" aria-label="linha 1, coluna 3, ausente, letra C">C</span>
+          <span class="casa cinza" role="gridcell" aria-label="linha 1, coluna 4, ausente, letra I">I</span>
+          <span class="casa cinza" role="gridcell" aria-label="linha 1, coluna 5, ausente, letra L">L</span>
+        </div>
+        <!-- linha 2 -->
+        <div class="linha" role="row">
+          <span class="casa verde" role="gridcell" aria-label="linha 2, coluna 1, verde, letra N">N</span>
+          <span class="casa cinza" role="gridcell" aria-label="linha 2, coluna 2, ausente, letra O">O</span>
+          <span class="casa cinza" role="gridcell" aria-label="linha 2, coluna 3, ausente, letra R">R</span>
+          <span class="casa cinza" role="gridcell" aria-label="linha 2, coluna 4, ausente, letra T">T</span>
+          <span class="casa amarelo" role="gridcell" aria-label="linha 2, coluna 5, amarelo, letra E">E</span>
+        </div>
+        <!-- linha 3 (revelada com flip) -->
+        <div class="linha" role="row" id="linha-flip">
+          <span class="casa verde" role="gridcell" aria-label="linha 3, coluna 1, verde, letra N">N</span>
+          <span class="casa verde" role="gridcell" aria-label="linha 3, coluna 2, verde, letra E">E</span>
+          <span class="casa verde" role="gridcell" aria-label="linha 3, coluna 3, verde, letra V">V</span>
+          <span class="casa verde" role="gridcell" aria-label="linha 3, coluna 4, verde, letra E">E</span>
+          <span class="casa cinza" role="gridcell" aria-label="linha 3, coluna 5, ausente, letra S">S</span>
+        </div>
+        <!-- linha 4: em preenchimento -->
+        <div class="linha atual" role="row">
+          <span class="casa preenchida" role="gridcell" aria-label="linha 4, coluna 1, letra N">N</span>
+          <span class="casa preenchida" role="gridcell" aria-label="linha 4, coluna 2, letra U">U</span>
+          <span class="casa caret" role="gridcell" aria-label="linha 4, coluna 3, em branco"></span>
+          <span class="casa" role="gridcell" aria-label="linha 4, coluna 4, em branco"></span>
+          <span class="casa" role="gridcell" aria-label="linha 4, coluna 5, em branco"></span>
+        </div>
+        <!-- linhas 5 e 6 -->
+        <div class="linha" role="row">
+          <span class="casa" role="gridcell"></span><span class="casa" role="gridcell"></span>
+          <span class="casa" role="gridcell"></span><span class="casa" role="gridcell"></span>
+          <span class="casa" role="gridcell"></span>
+        </div>
+        <div class="linha" role="row">
+          <span class="casa" role="gridcell"></span><span class="casa" role="gridcell"></span>
+          <span class="casa" role="gridcell"></span><span class="casa" role="gridcell"></span>
+          <span class="casa" role="gridcell"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dica">
+      <span class="ico">💡</span>
+      <p><b>Dica rápida:</b> 🟩 letra no lugar certo · 🟨 letra existe em outro lugar · ⬛ letra fora da palavra.</p>
+    </div>
+
+    <div class="teclado" aria-label="Teclado virtual">
+      <div class="tk-linha">
+        <button class="tecla">Q</button><button class="tecla">W</button><button class="tecla lugar">E</button>
+        <button class="tecla">R</button><button class="tecla usada">T</button><button class="tecla">Y</button>
+        <button class="tecla">U</button><button class="tecla usada">I</button><button class="tecla">O</button><button class="tecla">P</button>
+      </div>
+      <div class="tk-linha" style="padding:0 12px">
+        <button class="tecla usada">A</button><button class="tecla usada">S</button><button class="tecla">D</button>
+        <button class="tecla usada">F</button><button class="tecla">G</button><button class="tecla">H</button>
+        <button class="tecla">J</button><button class="tecla">K</button><button class="tecla usada">L</button>
+      </div>
+      <div class="tk-linha">
+        <button class="tecla wide">⌫ Apagar</button><button class="tecla">Z</button><button class="tecla">X</button>
+        <button class="tecla usada">C</button><button class="tecla lugar">V</button><button class="tecla">B</button>
+        <button class="tecla lugar">N</button><button class="tecla">M</button><button class="tecla wide">Enviar</button>
+      </div>
+    </div>
+
+    <div class="barra-botoes">
+      <button class="btn btn-fantasma" id="btn-flip">↻ Repetir animação</button>
+      <button class="btn btn-fantasma" id="btn-shake">🚫 Simular erro</button>
+    </div>
+    <p class="caption" style="text-align:center;margin-top:12px">Dica de onboarding — 1ª partida ensina jogando, sem tutorial longo</p>
+  </section>
+
+  <!-- ==================== TELA VITÓRIA ==================== -->
+  <section class="screen" id="screen-vitoria" role="tabpanel">
+    <div class="fundo-jogo" aria-hidden="true">
+      <div class="linha"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="linha"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="linha"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="linha"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="confete-area" id="confete" aria-hidden="true"></div>
+
+    <div class="modal-vitoria">
+      <span class="glow"></span>
+      <p class="eyebrow">✨ Desafio do Dia concluído</p>
+      <h2 class="h-display" style="margin-top:6px">Você acertou!</h2>
+      <p class="palavra-revelada"><em>NEVES</em></p>
+      <div class="placar"><b>3</b><span>/ 6 tentativas</span></div>
+      <div><span class="selo-streak grande">🔥 Sequência de 12 dias</span></div>
+
+      <div class="grade-emoji" aria-label="Resumo em emojis para compartilhar">
+        <span class="ge-linha"><span>🟩</span><span>🟨</span><span>⬛</span><span>🟩</span><span>⬛</span></span>
+        <span class="ge-linha"><span>⬛</span><span>🟩</span><span>🟩</span><span>🟩</span><span>🟩</span></span>
+        <span class="ge-linha"><span>🟩</span><span>🟩</span><span>🟩</span><span>🟩</span><span>🟩</span></span>
+      </div>
+
+      <button class="btn btn-coral" id="btn-compartilhar">📣 Compartilhar resultado</button>
+      <button class="btn btn-fantasma" data-ir="estatisticas">📊 Ver estatísticas</button>
+      <p class="caption" style="margin-top:12px">Sem spoiler — a grade nunca revela a palavra · Próximo desafio amanhã ☀️</p>
+    </div>
+  </section>
+
+  <!-- ==================== TELA ESTATÍSTICAS ==================== -->
+  <section class="screen" id="screen-estatisticas" role="tabpanel">
+    <p class="eyebrow">📊 Seu histórico</p>
+    <h2 class="h-display" style="margin:4px 0 2px">Estatísticas</h2>
+    <p class="body-s">Desafios do dia · desde julho de 2026</p>
+
+    <div class="grade-stats">
+      <div class="stat"><b>24</b><span>Jogos</span></div>
+      <div class="stat"><b>21</b><span>Vitórias</span></div>
+      <div class="stat destaque"><b>88%</b><span>Taxa</span></div>
+      <div class="stat chama"><b>12</b><span>Sequência</span></div>
+      <div class="stat"><b>17</b><span>Melhor seq.</span></div>
+      <div class="stat destaque"><b>3,5</b><span>Tentativas</span></div>
+    </div>
+
+    <div class="resumo-vd">
+      <span class="pill-vd v">Vitórias <b>21</b></span>
+      <span class="pill-vd d">Derrotas <b>3</b></span>
+    </div>
+
+    <div class="histograma" id="histograma">
+      <h3>Distribuição de tentativas</h3>
+      <p class="caption">Nas suas vitórias · a faixa dourada é o seu padrão</p>
+      <div class="barras">
+        <span class="barra"><i data-h="14"></i><u>1</u><span class="rot">1</span></span>
+        <span class="barra"><i data-h="43"></i><u>2</u><span class="rot">3</span></span>
+        <span class="barra melhor"><i data-h="86"></i><u>3</u><span class="rot">6</span></span>
+        <span class="barra"><i data-h="100"></i><u>4</u><span class="rot">7</span></span>
+        <span class="barra"><i data-h="43"></i><u>5</u><span class="rot">3</span></span>
+        <span class="barra"><i data-h="14"></i><u>6</u><span class="rot">1</span></span>
+      </div>
+    </div>
+
+    <p class="caption" style="text-align:center;margin-top:14px">A derrota não quebra sua sequência — só encerra o dia. ❤️</p>
+  </section>
+
+  <!-- ==================== RODAPÉ — PALETA ==================== -->
+  <footer class="rodape">
+    <div class="swatches" aria-label="Paleta de cores do protótipo">
+      <span class="swatch"><i class="bolha" style="background:#12142A"></i><span><b>Noite</b><span>#12142A</span></span></span>
+      <span class="swatch"><i class="bolha" style="background:#1C1F3D"></i><span><b>Tinta</b><span>#1C1F3D</span></span></span>
+      <span class="swatch"><i class="bolha" style="background:#F5EFE3"></i><span><b>Creme</b><span>#F5EFE3</span></span></span>
+      <span class="swatch"><i class="bolha" style="background:#F2B544"></i><span><b>Mel</b><span>#F2B544</span></span></span>
+      <span class="swatch"><i class="bolha" style="background:#E4674C"></i><span><b>Coral</b><span>#E4674C</span></span></span>
+      <span class="swatch"><i class="bolha" style="background:#2F7D50"></i><span><b>Verde-certo</b><span>#2F7D50</span></span></span>
+    </div>
+    <p>Paleta “Amanhecer” · protótipo visual · Palavra do Dia</p>
+  </footer>
+</div>
+
+<!-- ==================== PAINEL PALETA & ESTILO ==================== -->
+<button class="fab-estilo" id="fab-estilo" aria-expanded="false" aria-controls="painel-estilo">🎨 Paleta &amp; Estilo</button>
+
+<aside class="painel-estilo" id="painel-estilo" aria-label="Paleta e estilo do sistema de design">
+  <h2>Sistema “Amanhecer”</h2>
+  <p class="body-s">O dia nasce no tabuleiro: noite profunda, luz de mel e o verde da certeza.</p>
+
+  <h3>Paleta</h3>
+  <div class="painel-sw">
+    <span class="swatch"><i class="bolha" style="background:#12142A"></i><span><b>Noite</b><span>#12142A · fundo</span></span></span>
+    <span class="swatch"><i class="bolha" style="background:#1C1F3D"></i><span><b>Tinta</b><span>#1C1F3D · superfície</span></span></span>
+    <span class="swatch"><i class="bolha" style="background:#F5EFE3"></i><span><b>Creme</b><span>#F5EFE3 · texto</span></span></span>
+    <span class="swatch"><i class="bolha" style="background:#F2B544"></i><span><b>Mel</b><span>#F2B544 · destaque</span></span></span>
+    <span class="swatch"><i class="bolha" style="background:#E4674C"></i><span><b>Coral</b><span>#E4674C · calor</span></span></span>
+    <span class="swatch"><i class="bolha" style="background:#2F7D50"></i><span><b>Verde-certo</b><span>#2F7D50 · acerto</span></span></span>
+  </div>
+
+  <h3>Escala tipográfica</h3>
+  <div class="escala-demo">
+    <div><span class="exemplo h-display">Aa</span><span class="caption">Display — Georgia 30px</span></div>
+    <div><span class="exemplo h-1">Aa</span><span class="caption">Título — System UI 19px/800</span></div>
+    <div><span class="exemplo" style="font-size:15px">Aa</span><span class="caption">Corpo — System UI 15px</span></div>
+    <div><span class="exemplo casa-mini mini-verde" style="font-size:14px">A</span><span class="caption">Tabuleiro — Mono 26px/700</span></div>
+    <div><span class="exemplo eyebrow" style="font-size:11px">Aa</span><span class="caption">Legenda — 11px uppercase</span></div>
+  </div>
+
+  <h3>Animações</h3>
+  <div class="anim-demo">
+    <p><b>Flip da casa</b><span>Revelação 3D em .6s com troca de cor no eixo</span></p>
+    <button data-demo="flip">Testar</button>
+  </div>
+  <div style="display:flex;gap:6px;margin:-2px 0 10px;padding-left:11px">
+    <span class="casa-mini mini-neutra">N</span><span class="casa-mini mini-amarelo">E</span><span class="casa-mini mini-verde">V</span>
+  </div>
+  <div class="anim-demo">
+    <p><b>Shake de erro</b><span>Chute inválido treme a linha atual</span></p>
+    <button data-demo="shake">Testar</button>
+  </div>
+  <div class="anim-demo">
+    <p><b>Pulso do streak</b><span>Brilho respirando no selo de sequência</span></p>
+    <button data-demo="pulso">Testar</button>
+  </div>
+  <div class="anim-demo">
+    <p><b>Confete da vitória</b><span>Farpas em CSS puro, 100% offline</span></p>
+    <button data-demo="confete">Testar</button>
+  </div>
+  <div class="anim-demo">
+    <p><b>Crescimento das barras</b><span>Histograma anima ao abrir a aba</span></p>
+    <button data-demo="barra">Testar</button>
+  </div>
+  <p class="caption">Todas respeitam <b style="color:var(--mel)">prefers-reduced-motion</b>. Espaçamento em escala 4/8/16/24 · raios 8/14/22/28.</p>
+</aside>
+
+<script>
+(function(){
+  var tabs = document.querySelectorAll('.tab');
+  var screens = document.querySelectorAll('.screen');
+
+  function mostrar(nome){
+    tabs.forEach(function(t){ t.setAttribute('aria-selected', String(t.dataset.tela === nome)); });
+    screens.forEach(function(s){ s.classList.toggle('is-active', s.id === 'screen-' + nome); });
+    if(nome === 'vitoria') largarConfete();
+    if(nome === 'estatisticas') animarBarras();
+    if(nome === 'partida') replayFlip();
+  }
+
+  tabs.forEach(function(t){ t.addEventListener('click', function(){ mostrar(t.dataset.tela); }); });
+  document.querySelectorAll('[data-ir]').forEach(function(b){
+    b.addEventListener('click', function(){ mostrar(b.dataset.ir); });
+  });
+
+  /* --- flip da linha 3 --- */
+  var linhaFlip = document.getElementById('linha-flip');
+  function replayFlip(){
+    var casas = linhaFlip.querySelectorAll('.casa');
+    casas.forEach(function(c, i){
+      c.classList.remove('virando');
+      void c.offsetWidth; /* reinicia a animação */
+      c.style.animationDelay = (i * 0.18) + 's';
+      c.classList.add('virando');
+    });
+  }
+  document.getElementById('btn-flip').addEventListener('click', replayFlip);
+
+  /* --- shake + toast --- */
+  var board = document.getElementById('board');
+  var toast = document.getElementById('toast-erro');
+  document.getElementById('btn-shake').addEventListener('click', function(){
+    board.classList.remove('errou'); toast.classList.remove('ver');
+    void board.offsetWidth;
+    board.classList.add('errou'); toast.classList.add('ver');
+  });
+
+  /* --- confete (peças geradas por JS, animação 100% CSS) --- */
+  var area = document.getElementById('confete');
+  var cores = ['#F2B544','#E4674C','#2F7D50','#F5EFE3','#E9B949'];
+  function largarConfete(){
+    area.innerHTML = '';
+    for(var i = 0; i < 34; i++){
+      var f = document.createElement('i');
+      f.className = 'confete';
+      f.style.left = (Math.random() * 100) + '%';
+      f.style.background = cores[i % cores.length];
+      f.style.animationDuration = (2 + Math.random() * 1.6) + 's';
+      f.style.animationDelay = (Math.random() * 0.9) + 's';
+      f.style.opacity = 0.85;
+      area.appendChild(f);
+    }
+  }
+
+  /* --- compartilhar --- */
+  var btnComp = document.getElementById('btn-compartilhar');
+  btnComp.addEventListener('click', function(){
+    var original = btnComp.textContent;
+    btnComp.textContent = 'Copiado! ✅';
+    btnComp.style.filter = 'brightness(1.15)';
+    setTimeout(function(){ btnComp.textContent = original; btnComp.style.filter = ''; }, 1800);
+  });
+
+  /* --- barras do histograma --- */
+  function animarBarras(){
+    var barras = document.querySelectorAll('#histograma .barra i');
+    barras.forEach(function(b){ b.style.height = '0'; });
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        barras.forEach(function(b, i){
+          b.style.transitionDelay = (i * 0.08) + 's';
+          b.style.height = b.dataset.h + '%';
+        });
+      });
+    });
+  }
+
+  /* --- painel Paleta & Estilo --- */
+  var fab = document.getElementById('fab-estilo');
+  var painel = document.getElementById('painel-estilo');
+  function togglePainel(force){
+    var abrir = force !== undefined ? force : !painel.classList.contains('aberto');
+    painel.classList.toggle('aberto', abrir);
+    fab.setAttribute('aria-expanded', String(abrir));
+  }
+  fab.addEventListener('click', function(){ togglePainel(); });
+  document.querySelectorAll('[data-abrir-estilo]').forEach(function(b){
+    b.addEventListener('click', function(){ togglePainel(true); });
+  });
+
+  /* --- demos do painel --- */
+  document.querySelectorAll('[data-demo]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var tipo = b.dataset.demo;
+      if(tipo === 'flip'){
+        var alvo = document.querySelector('#painel-estilo .mini-amarelo');
+        alvo.classList.remove('virando-demo'); void alvo.offsetWidth;
+        alvo.style.animationDelay = '0s'; alvo.classList.add('virando-demo');
+      } else if(tipo === 'shake'){
+        var mini = document.querySelector('#painel-estilo .mini-neutra');
+        mini.classList.remove('shake-demo'); void mini.offsetWidth;
+        mini.classList.add('shake-demo');
+      } else if(tipo === 'pulso'){
+        var selo = document.querySelector('#painel-estilo .selo-demo') || b.closest('.painel-estilo').querySelector('.selo-streak');
+        if(!selo){
+          selo = document.createElement('div');
+          selo.className = 'selo-streak selo-demo';
+          selo.textContent = '🔥 Sequência de 12 dias';
+          selo.style.margin = '0 0 8px 11px';
+          b.closest('.anim-demo').after(selo);
+        }
+        selo.classList.remove('pulso-demo'); void selo.offsetWidth;
+        selo.classList.add('pulso-demo');
+      } else if(tipo === 'confete'){
+        largarConfete();
+        document.querySelector('#screen-vitoria').scrollIntoView({behavior:'smooth'});
+        togglePainel(false);
+        mostrar('vitoria');
+      } else if(tipo === 'barra'){
+        togglePainel(false);
+        mostrar('estatisticas');
+      }
+    });
+  });
+
+  /* estado inicial */
+  largarConfete();
+  animarBarras();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Testes — Palavra do Dia</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --noite: #12142a;
+        --tinta: #1c1f3d;
+        --borda: #333a66;
+        --creme: #f5efe3;
+        --mel: #f2b544;
+        --verde: #2f7d50;
+        --coral: #e4674c;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 28px 18px 48px;
+        background: var(--noite);
+        color: var(--creme);
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.5;
+      }
+      main { max-width: 720px; margin: 0 auto; }
+      h1 { font-family: Georgia, serif; margin: 0 0 4px; font-size: 30px; }
+      .sub { color: #b9b4c9; font-size: 14px; margin: 0 0 20px; }
+      .resumo {
+        display: inline-block;
+        margin-bottom: 16px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-weight: 700;
+        border: 1px solid var(--borda);
+      }
+      .resumo.ok { border-color: var(--verde); background: rgba(47, 125, 80, 0.18); }
+      .resumo.falha { border-color: var(--coral); background: rgba(228, 103, 76, 0.14); }
+      .teste {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+        padding: 9px 12px;
+        border-bottom: 1px solid rgba(51, 58, 102, 0.55);
+        font-size: 14px;
+      }
+      .teste.ok span { color: #7fd6a3; }
+      .teste.falha span { color: var(--coral); }
+      .teste small {
+        display: block;
+        margin-top: 3px;
+        color: #f4b1a1;
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+      }
+      .voltar {
+        display: inline-block;
+        margin-top: 22px;
+        color: var(--mel);
+        font-weight: 700;
+      }
+      #status { color: #b9b4c9; font-size: 13px; margin: 18px 0 0; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Testes do núcleo</h1>
+      <p class="sub">Feedback, dicionário, partida, estatísticas, diário e compartilhamento.</p>
+      <div id="resultado"></div>
+      <p id="status">Executando…</p>
+      <a class="voltar" href="../index.html">← Voltar ao jogo</a>
+    </main>
+    <script type="module" src="./suites.js"></script>
+  </body>
+</html>

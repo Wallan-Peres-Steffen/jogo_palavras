@@ -1,0 +1,76 @@
+// Palpites extras aceitos (sem acento; a comparação é normalizada).
+// As formas normalizadas das RESPOSTAS são adicionadas automaticamente
+// ao conjunto válido por dictionary.js.
+export const VALIDAS = [
+  'ABUSO', 'ACENO', 'ACESO', 'ADEUS', 'ADIAR', 'ADORO', 'AGUDA', 'ALGOZ', 'AMEBA', 'ANDAR',
+  'ANEXO', 'APITO', 'ARAME', 'ARDER', 'ARDIL', 'ARENA', 'ARGIL', 'ARMAR', 'ARTES', 'ASILO',
+  'ATADO', 'AVIDO', 'AUTOS',
+
+  'BAGRE', 'BALDE', 'BALSA', 'BAMBU', 'BARBA', 'BASES', 'BATER', 'BEATA', 'BEBER', 'BERRO',
+  'BISPO', 'BOCAL', 'BOLHA', 'BONDE', 'BORRA', 'BOTÃO', 'BRADO', 'BRASA', 'BRAÇO', 'BREVE',
+  'BROTO', 'BRUMA',
+
+  'CACTO', 'CALDO', 'CALHA', 'CALVO', 'CANJA', 'CANOA', 'CAPIM', 'CAPUZ', 'CARGO', 'CASCO',
+  'CATRE', 'CAVAR', 'CEIFA', 'CENSO', 'CERNE', 'CESTO', 'CETIM', 'CHAGA', 'CHALÉ',
+  'CHATO', 'CHEFE', 'CHORO', 'CIFRA', 'CINTO', 'CLERO', 'CLONE', 'COCHO', 'COFRE',
+  'COICE', 'COLMO', 'CONDE', 'CONTO', 'COPAS', 'CORDA', 'CORNO', 'COROA', 'CORVO', 'COVIL',
+  'CRASE', 'CREME', 'CRINA', 'CRISE', 'CROMO', 'CUECA', 'CULTO', 'CUNHA', 'CUPIM', 'CURAR',
+  'CURSO', 'CURVA', 'CUSPE',
+
+  'DELTA', 'DEPOR', 'DESSE', 'DESTE', 'DETER', 'DIETA', 'DOIDO', 'DOMAR', 'DORSO', 'DOSAR',
+  'DUCHA', 'DUNAS', 'DUQUE', 'DURAR',
+
+  'ÉBANO', 'ECOAR', 'EIXOS', 'ENTÃO', 'ESQUI', 'ETNIA', 'ÊXITO', 'EXPOR', 'EXTRA',
+
+  'FACHO', 'FARDO', 'FAZER', 'FENDA', 'FERIR', 'FLAMA', 'FORNO', 'FORRO', 'FOSSA', 'FRADE',
+  'FREVO', 'FRIOS',
+
+  'GALHO', 'GALÃO', 'GAMBÁ', 'GANSO', 'GAROA', 'GASTO', 'GELAR', 'GEMER', 'GENES', 'GESTO',
+  'GINGA', 'GLEBA', 'GOELA', 'GRAÇA', 'GREVE', 'GRILO', 'GUAPO', 'GUETO',
+
+  'HARPA', 'HINOS', 'HOMEM', 'HORDA', 'HORTO',
+
+  'IDEAL', 'IDOSO', 'IMPOR', 'INATO', 'ÍNDIO', 'INVÉS', 'IRADO',
+
+  'JARRA', 'JAZER', 'JEJUM', 'JORRO', 'JULHO', 'JUNHO', 'JURAR',
+
+  'LACRE', 'LAGOA', 'LANCE', 'LAPSO', 'LARVA', 'LAZER', 'LEGAL', 'LEIGO', 'LESTE', 'LEVAR',
+  'LICEU', 'LIMÃO', 'LINDO', 'LÍRIO', 'LIXAR', 'LOBOS', 'LOUCO', 'LOURO', 'LUVAS',
+
+  'MÁFIA', 'MAGIA', 'MAIOR', 'MALTE', 'MANCO', 'MANIA', 'MAPAS', 'MARCO', 'MEDIR', 'MELÃO',
+  'MESAS', 'MEXER', 'MIADO', 'MIOLO', 'MIRAR', 'MISSA', 'MOCHO', 'MOITA', 'MOLDE', 'MONGE',
+  'MOSCA', 'MUGIR', 'MULTA', 'MURRO', 'MUSGO',
+
+  'NAVAL', 'NAVIO', 'NEGAR', 'NEGRO', 'NERVO', 'NINAR', 'NISSO', 'NOIVA', 'NOIVO', 'NOTAR',
+  'NUDEZ',
+
+  'OBESO', 'OBTER', 'ORGIA', 'OUSAR',
+
+  'PALMO', 'PANDA', 'PARDO', 'PAUTA', 'PAVOR', 'PEDAL', 'PEITO', 'PENAL', 'PENCA', 'PESAR',
+  'PIADA', 'PICAR', 'PILAR', 'PINÇA', 'PINGO', 'PISTA', 'PLACA', 'PLEBE', 'POBRE', 'POÇÃO',
+  'PODRE', 'POLVO', 'POMBO', 'PORCO', 'POSAR', 'POSTE', 'POTES', 'PRAÇA', 'PRAGA', 'PRECE',
+  'PREGO', 'PRESA', 'PRETO', 'PRIMO', 'PROLE', 'PUDIM', 'PULSO', 'PUNIR', 'PUXAR',
+
+  'QUEDA',
+
+  'RACHA', 'RADAR', 'RALAR', 'RAMPA', 'RAPAZ', 'RAPTO', 'RATOS', 'RÉGUA', 'REMAR', 'REPOR',
+  'RESTO', 'RIFLE', 'RIGOR', 'RIMAR', 'RISCO', 'ROMBO', 'RONCO', 'ROSCA', 'ROUCO', 'RUGAS',
+
+  'SABÃO', 'SABRE', 'SACAR', 'SAFRA', 'SALÃO', 'SALDO', 'SALMO', 'SALSA', 'SAMBA', 'SANHA',
+  'SARAU', 'SAUNA', 'SECAR', 'SEIVA', 'SENHA', 'SEXTO', 'SIGLA', 'SÍMIO', 'SÍTIO', 'SOCAR',
+  'SOLDA', 'SOMAR', 'SOPRO', 'SÓTÃO', 'SUGAR', 'SUJAR', 'SURDO', 'SURTO', 'SUTIL',
+
+  'TALCO', 'TALHA', 'TAMPA', 'TANGA', 'TARJA', 'TECER', 'TEIMA', 'TELHA', 'TELÃO', 'TENDA',
+  'TENOR', 'TERÇA', 'TIMÃO', 'TIRAR', 'TOCHA', 'TONTO', 'TORNO', 'TOSCO', 'TOSSE', 'TOUCA',
+  'TOURO', 'TRAÇA', 'TRAPO', 'TRENA', 'TREZE', 'TROCO', 'TROPA', 'TRUFA', 'TURMA', 'TURNO',
+
+  'UIVAR', 'ULTRA', 'UNHAS', 'URINA', 'USUAL',
+
+  'VACAS', 'VAGAR', 'VARAL', 'VASTO', 'VELAS', 'VELOZ', 'VERBA', 'VERME', 'VESPA', 'VETOR',
+  'VIGIA', 'VINTE', 'VIOLA', 'VIRAL', 'VISÃO', 'VISTA', 'VITAL', 'VIÚVA', 'VOCAL', 'VORAZ',
+  'VOSSO', 'VULGO',
+
+  'XAMPU', 'XEQUE',
+
+  'ZELAR', 'ZEROS', 'ZUMBI'
+];
